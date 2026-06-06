@@ -458,110 +458,207 @@ class WorkerThread(threading.Thread):
         logger.info(f"[Luồng {self.thread_id}] 🏁 Kết thúc.")
         print(f"[Luồng {self.thread_id}] 🏁 Kết thúc.")
 
-def cleanup_removed_jobs(db):
-    """Check each TopCV URL and delete only jobs confirmed as removed."""
-    def classify_removed_page(driver):
-        current_url = driver.current_url.lower()
-        title = driver.title.lower()
-        page_src = driver.page_source.lower()
+def classify_removed_page(driver):
+    """Phân loại trang đã bị gỡ hay chưa."""
+    current_url = driver.current_url.lower()
+    title = driver.title.lower()
+    page_src = driver.page_source.lower()
 
-        transient_markers = (
-            "captcha", "cloudflare", "access denied", "verify you are human",
-            "too many requests", "unusual traffic", "robot", "blocked",
-        )
-        if any(marker in title or marker in page_src or marker in current_url for marker in transient_markers):
-            return False, "transient/anti-bot page"
+    transient_markers = (
+        "captcha", "cloudflare", "access denied", "verify you are human",
+        "too many requests", "unusual traffic", "robot", "blocked",
+    )
+    if any(marker in title or marker in page_src or marker in current_url for marker in transient_markers):
+        return False, "transient/anti-bot page"
 
-        # FIX: tách "404" riêng, chỉ check trong title để tránh false positive
-        # (page source thường chứa "404" trong CSS/JS/SĐT/địa chỉ)
-        removed_title_markers = (
-            "không tìm thấy", "khong tim thay", "không tồn tại",
-            "khong ton tai", "đã bị gỡ", "da bi go",
-        )
-        if any(marker in title for marker in removed_title_markers):
-            return True, "removed marker in title"
-        if "404" in title:
-            return True, "404 in title"
+    # FIX: tách "404" riêng, chỉ check trong title để tránh false positive
+    # (page source thường chứa "404" trong CSS/JS/SĐT/địa chỉ)
+    removed_title_markers = (
+        "không tìm thấy", "khong tim thay", "không tồn tại",
+        "khong ton tai", "đã bị gỡ", "da bi go",
+    )
+    if any(marker in title for marker in removed_title_markers):
+        return True, "removed marker in title"
+    if "404" in title:
+        return True, "404 in title"
 
-        if "/viec-lam/" not in current_url:
-            if current_url.rstrip("/") in ("https://www.topcv.vn", "https://topcv.vn"):
-                return True, "redirected to home"
-            if "/tim-viec-lam" in current_url:
-                return True, "redirected to search"
-            return False, f"unexpected redirect: {driver.current_url}"
+    if "/viec-lam/" not in current_url:
+        if current_url.rstrip("/") in ("https://www.topcv.vn", "https://topcv.vn"):
+            return True, "redirected to home"
+        if "/tim-viec-lam" in current_url:
+            return True, "redirected to search"
+        return False, f"unexpected redirect: {driver.current_url}"
 
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        title_tag = soup.select_one('h1.job-detail__info--title') or soup.select_one('h2.title')
-        if not title_tag:
-            return False, "missing job title; skipped to avoid false delete"
-        return False, "active"
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    title_tag = soup.select_one('h1.job-detail__info--title') or soup.select_one('h2.title')
+    if not title_tag:
+        return False, "missing job title; skipped to avoid false delete"
+    return False, "active"
+
+
+# ─── Biến dùng chung giữa các luồng cleanup ──────────────────────────────────
+cleanup_deleted_count = 0
+cleanup_skipped_count = 0
+cleanup_counter_lock = threading.Lock()
+
+
+class CleanupWorkerThread(threading.Thread):
+    """Luồng kiểm tra và xóa tin đã bị gỡ — hoạt động giống WorkerThread khi cào."""
+
+    def __init__(self, thread_id, jobs_chunk, total_jobs, db_instance):
+        threading.Thread.__init__(self)
+        self.thread_id = thread_id
+        self.jobs_chunk = jobs_chunk      # danh sách (job_id, url, deadline) mà luồng này phụ trách
+        self.total_jobs = total_jobs      # tổng số tin (dùng để hiển thị tiến trình)
+        self.db = db_instance
+        self.driver = None
+        self.daemon = True
+
+    def init_driver(self):
+        with init_lock:
+            try:
+                logger.info(f"[Cleanup-Luồng {self.thread_id}] Đang khởi tạo trình duyệt...")
+                options = uc.ChromeOptions()
+                self.driver = uc.Chrome(options=options, version_main=148)
+                time.sleep(3)
+            except Exception as e:
+                logger.error(f"[Cleanup-Luồng {self.thread_id}] ❌ Lỗi khởi tạo Chrome: {e}")
+                self.driver = None
+                raise
+
+    def _is_driver_alive(self):
+        try:
+            _ = self.driver.current_url
+            return True
+        except Exception:
+            return False
+
+    def restart_driver(self):
+        try:
+            self.driver.quit()
+        except Exception:
+            pass
+        self.driver = None
+        logger.info(f"[Cleanup-Luồng {self.thread_id}] 🔄 Đang khởi động lại Chrome...")
+        time.sleep(5)
+        self.init_driver()
+
+    def run(self):
+        global cleanup_deleted_count, cleanup_skipped_count
+        max_total_restarts = 5
+        total_restarts = 0
+
+        while total_restarts < max_total_restarts:
+            try:
+                if self.driver is None:
+                    self.init_driver()
+
+                for i, (job_id, url, deadline) in enumerate(self.jobs_chunk):
+                    try:
+                        if not self._is_driver_alive():
+                            logger.warning(f"[Cleanup-Luồng {self.thread_id}] Chrome đã crash, đang khởi động lại...")
+                            self.restart_driver()
+
+                        self.driver.get(url)
+                        time.sleep(random.uniform(3, 5))
+                        is_removed, reason = classify_removed_page(self.driver)
+
+                        if is_removed:
+                            # FIX: redirect cần xác nhận kỹ hơn để tránh xóa nhầm do rate-limit
+                            if "redirect" in reason:
+                                confirm_count = 0
+                                for _ in range(3):
+                                    time.sleep(random.uniform(10, 15))
+                                    self.driver.get(url)
+                                    time.sleep(random.uniform(5, 8))
+                                    is_removed, reason = classify_removed_page(self.driver)
+                                    if is_removed:
+                                        confirm_count += 1
+                                    else:
+                                        break
+                                is_removed = (confirm_count >= 3)
+                            else:
+                                # Removed marker trong title → double check
+                                time.sleep(random.uniform(2, 4))
+                                self.driver.get(url)
+                                time.sleep(random.uniform(3, 5))
+                                is_removed, reason = classify_removed_page(self.driver)
+
+                        if is_removed:
+                            if self.db.delete_job(job_id):
+                                with cleanup_counter_lock:
+                                    cleanup_deleted_count += 1
+                                print(f"  🗑️ [Luồng {self.thread_id}] [{i+1}/{len(self.jobs_chunk)}] Đã xóa (bị gỡ): {url[-50:]}")
+                        else:
+                            if reason != "active":
+                                with cleanup_counter_lock:
+                                    cleanup_skipped_count += 1
+                                logger.warning(f"[Cleanup-Luồng {self.thread_id}] Bỏ qua không xóa {url[-50:]}: {reason}")
+                            if (i + 1) % 20 == 0:
+                                print(f"  ✓ [Luồng {self.thread_id}] [{i+1}/{len(self.jobs_chunk)}] Đã kiểm tra...")
+
+                    except Exception as e:
+                        logger.warning(f"[Cleanup-Luồng {self.thread_id}] Lỗi kiểm tra {url[-30:]}: {e}")
+                        if any(kw in str(e).lower() for kw in ("session", "chrome", "disconnected")):
+                            self.restart_driver()
+                        continue
+
+                break  # Hoàn tất danh sách → thoát vòng while
+
+            except Exception as e:
+                total_restarts += 1
+                logger.error(f"[Cleanup-Luồng {self.thread_id}] 💥 Lỗi nghiêm trọng (lần {total_restarts}/{max_total_restarts}): {e}")
+                try:
+                    self.driver.quit()
+                except Exception:
+                    pass
+                self.driver = None
+                if total_restarts < max_total_restarts:
+                    wait_time = min(30, 10 * total_restarts)
+                    print(f"[Cleanup-Luồng {self.thread_id}] ⏳ Chờ {wait_time}s rồi thử lại...")
+                    time.sleep(wait_time)
+                else:
+                    logger.error(f"[Cleanup-Luồng {self.thread_id}] 💀 Đã hết lượt restart, thread dừng hẳn.")
+
+        try:
+            self.driver.quit()
+        except Exception:
+            pass
+        logger.info(f"[Cleanup-Luồng {self.thread_id}] 🏁 Kết thúc.")
+        print(f"[Cleanup-Luồng {self.thread_id}] 🏁 Kết thúc.")
+
+
+def cleanup_removed_jobs(db, num_threads=1):
+    """Check each TopCV URL and delete only jobs confirmed as removed (hỗ trợ đa luồng)."""
+    global cleanup_deleted_count, cleanup_skipped_count
+    cleanup_deleted_count = 0
+    cleanup_skipped_count = 0
 
     jobs = db.get_all_jobs()
     if not jobs:
         print("Không có tin nào trong DB.")
         return 0
 
-    print(f"\n🔍 Kiểm tra {len(jobs)} tin trên TopCV...")
-    options = uc.ChromeOptions()
-    driver = uc.Chrome(options=options, version_main=148)
-    deleted = 0
-    skipped_uncertain = 0
+    print(f"\n🔍 Kiểm tra {len(jobs)} tin trên TopCV với {num_threads} luồng...")
 
-    try:
-        for i, (job_id, url, deadline) in enumerate(jobs):
-            try:
-                driver.get(url)
-                time.sleep(random.uniform(3, 5))
-                is_removed, reason = classify_removed_page(driver)
+    # Chia đều danh sách jobs cho các luồng (round-robin)
+    chunks = [[] for _ in range(num_threads)]
+    for idx, job in enumerate(jobs):
+        chunks[idx % num_threads].append(job)
 
-                if is_removed:
-                    # FIX: redirect cần xác nhận kỹ hơn để tránh xóa nhầm do rate-limit
-                    if "redirect" in reason:
-                        # Redirect có thể do rate-limit tạm thời → cần 3 lần xác nhận
-                        confirm_count = 0
-                        for _ in range(3):
-                            time.sleep(random.uniform(10, 15))
-                            driver.get(url)
-                            time.sleep(random.uniform(5, 8))
-                            is_removed, reason = classify_removed_page(driver)
-                            if is_removed:
-                                confirm_count += 1
-                            else:
-                                break
-                        is_removed = (confirm_count >= 3)
-                    else:
-                        # Removed marker trong title → double check như cũ
-                        time.sleep(random.uniform(2, 4))
-                        driver.get(url)
-                        time.sleep(random.uniform(3, 5))
-                        is_removed, reason = classify_removed_page(driver)
+    threads = []
+    for i in range(num_threads):
+        if chunks[i]:  # chỉ tạo luồng nếu có job để xử lý
+            t = CleanupWorkerThread(i + 1, chunks[i], len(jobs), db)
+            threads.append(t)
 
-                if is_removed:
-                    if db.delete_job(job_id):
-                        deleted += 1
-                        print(f"  🗑️ [{i+1}/{len(jobs)}] Đã xóa (bị gỡ): {url[-50:]}")
-                else:
-                    if reason != "active":
-                        skipped_uncertain += 1
-                        logger.warning(f"Bỏ qua không xóa {url[-50:]}: {reason}")
-                    if (i + 1) % 20 == 0:
-                        print(f"  ✓ [{i+1}/{len(jobs)}] Đã kiểm tra...")
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
 
-            except Exception as e:
-                logger.warning(f"Lỗi kiểm tra {url[-30:]}: {e}")
-                # Nếu driver crash, restart
-                if any(kw in str(e).lower() for kw in ("session", "chrome", "disconnected")):
-                    try: driver.quit()
-                    except Exception: pass
-                    time.sleep(5)
-                    driver = uc.Chrome(options=uc.ChromeOptions(), version_main=148)
-                continue
-    finally:
-        try: driver.quit()
-        except Exception: pass
-
-    print(f"\n✓ Đã xóa {deleted} tin bị gỡ xuống. Bỏ qua {skipped_uncertain} tin chưa chắc chắn.")
-    return deleted
+    print(f"\n✓ Đã xóa {cleanup_deleted_count} tin bị gỡ xuống. Bỏ qua {cleanup_skipped_count} tin chưa chắc chắn.")
+    return cleanup_deleted_count
 
 
 if __name__ == "__main__":
@@ -575,9 +672,23 @@ if __name__ == "__main__":
         print("\n📅 Bước 1: Xóa tin đã hết hạn nộp hồ sơ...")
         expired = db.cleanup_expired_by_date()
 
-        # Bước 2: Kiểm tra URL trên TopCV, xóa tin bị gỡ
+        # Bước 2: Kiểm tra URL trên TopCV, xóa tin bị gỡ (hỗ trợ đa luồng)
         print("\n🌐 Bước 2: Kiểm tra tin bị gỡ trên TopCV...")
-        removed = cleanup_removed_jobs(db)
+        while True:
+            try:
+                num_threads_input = input("Nhập số luồng để kiểm tra (mặc định 1): ").strip()
+                if num_threads_input == "":
+                    cleanup_threads = 1
+                else:
+                    cleanup_threads = int(num_threads_input)
+                if cleanup_threads < 1:
+                    print("⚠ Số luồng phải >= 1, sử dụng mặc định 1.")
+                    cleanup_threads = 1
+                break
+            except ValueError:
+                print("⚠ Vui lòng nhập số nguyên hợp lệ.")
+        print(f"→ Sử dụng {cleanup_threads} luồng để kiểm tra tin bị gỡ.")
+        removed = cleanup_removed_jobs(db, num_threads=cleanup_threads)
 
         # Bước 3: Dọn bản ghi mồ côi
         print("\n🧹 Bước 3: Dọn bảng dữ liệu mồ côi...")
