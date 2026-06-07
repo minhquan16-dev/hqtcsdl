@@ -1,23 +1,29 @@
-import { useState } from "react"
-import { Navigate, NavLink, Outlet, useOutletContext } from "react-router"
-import { ActivityIcon } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { QueryError } from "@/components/common/QueryState"
-import { Section } from "@/components/common/Section"
-import { FilterBar } from "@/components/filters/FilterBar"
-import { KpiGrid } from "@/components/dashboard/KpiGrid"
-import { TrendsSection } from "@/components/dashboard/TrendsSection"
-import { PositionsSection } from "@/components/dashboard/PositionsSection"
-import { SkillsSection } from "@/components/dashboard/SkillsSection"
-import { SalarySection } from "@/components/dashboard/SalarySection"
-import { CompanySection, LocationSection } from "@/components/dashboard/LocationCompanySection"
-import { JobsSection, LevelSection } from "@/components/dashboard/LevelJobsSection"
-import { ThemeToggle } from "@/components/layout/ThemeToggle"
-import { useFiltersQuery } from "@/hooks/queries/useFiltersQuery"
-import { useOverviewQuery } from "@/hooks/queries/useOverviewQuery"
-import { FILTER_DEFAULTS, NAV_ITEMS } from "@/lib/constants"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { Navigate, NavLink, Outlet, useOutletContext } from "react-router";
+import { ActivityIcon } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryError } from "@/components/common/QueryState";
+import { Section } from "@/components/common/Section";
+import { FilterBar } from "@/components/filters/FilterBar";
+import { KpiGrid } from "@/components/dashboard/KpiGrid";
+import { TrendsSection } from "@/components/dashboard/TrendsSection";
+import { PositionsSection } from "@/components/dashboard/PositionsSection";
+import { SkillsSection } from "@/components/dashboard/SkillsSection";
+import { SalarySection } from "@/components/dashboard/SalarySection";
+import {
+  CompanySection,
+  LocationSection,
+} from "@/components/dashboard/LocationCompanySection";
+import {
+  JobsSection,
+  LevelSection,
+} from "@/components/dashboard/LevelJobsSection";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { useFiltersQuery } from "@/hooks/queries/useFiltersQuery";
+import { useOverviewQuery } from "@/hooks/queries/useOverviewQuery";
+import { FILTER_DEFAULTS, NAV_ITEMS } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 function cleanDashboardParams(filters) {
   return {
@@ -28,7 +34,7 @@ function cleanDashboardParams(filters) {
     position: filters.position,
     skill: filters.skill,
     company: filters.company,
-  }
+  };
 }
 
 function Sidebar() {
@@ -51,7 +57,7 @@ function Sidebar() {
               className={({ isActive }) =>
                 cn(
                   "rounded-3xl px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                  isActive && "bg-muted text-foreground"
+                  isActive && "bg-muted text-foreground",
                 )
               }
             >
@@ -61,7 +67,7 @@ function Sidebar() {
         </nav>
       </div>
     </aside>
-  )
+  );
 }
 
 function MobileNav() {
@@ -75,7 +81,7 @@ function MobileNav() {
           className={({ isActive }) =>
             cn(
               "shrink-0 rounded-3xl px-3 py-2 text-sm font-medium text-muted-foreground",
-              isActive && "bg-muted text-foreground"
+              isActive && "bg-muted text-foreground",
             )
           }
         >
@@ -83,7 +89,7 @@ function MobileNav() {
         </NavLink>
       ))}
     </nav>
-  )
+  );
 }
 
 function Header() {
@@ -100,13 +106,11 @@ function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
 
 export function DashboardLayout() {
-  const [filters, setFilters] = useState(FILTER_DEFAULTS)
-  const params = cleanDashboardParams(filters)
-  const filtersQuery = useFiltersQuery()
+  const filtersQuery = useFiltersQuery();
 
   return (
     <TooltipProvider>
@@ -117,87 +121,281 @@ export function DashboardLayout() {
             <Header />
             <MobileNav />
             <div className="mx-auto flex max-w-[1500px] flex-col gap-6 px-4 py-6 md:px-6">
-              {filtersQuery.isError ? (
-                <QueryError error={filtersQuery.error} onRetry={filtersQuery.refetch} />
-              ) : (
-                <FilterBar
-                  filters={filters}
-                  filterOptions={filtersQuery.data}
-                  onChange={setFilters}
-                  onReset={setFilters}
-                />
-              )}
-              <Outlet context={{ params }} />
+              <Outlet context={{ filtersQuery }} />
             </div>
           </main>
         </div>
       </div>
     </TooltipProvider>
-  )
+  );
 }
 
 function useDashboardContext() {
-  return useOutletContext()
+  return useOutletContext();
+}
+
+function useRouteFilters() {
+  const [draftFilters, setDraftFilters] = useState(FILTER_DEFAULTS);
+  const [appliedFilters, setAppliedFilters] = useState(FILTER_DEFAULTS);
+  const [requestId, setRequestId] = useState(0);
+
+  function applyFilters() {
+    setAppliedFilters(draftFilters);
+    setRequestId((current) => current + 1);
+  }
+
+  function resetFilters() {
+    setDraftFilters(FILTER_DEFAULTS);
+    setAppliedFilters(FILTER_DEFAULTS);
+    setRequestId((current) => current + 1);
+  }
+
+  return {
+    draftFilters,
+    appliedParams: {
+      ...cleanDashboardParams(appliedFilters),
+      __requestId: requestId,
+    },
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  };
+}
+
+function RouteFilterBar({ filters, onChange, onReset, onApply }) {
+  const { filtersQuery } = useDashboardContext();
+
+  if (filtersQuery.isError) {
+    return (
+      <QueryError error={filtersQuery.error} onRetry={filtersQuery.refetch} />
+    );
+  }
+
+  return (
+    <FilterBar
+      filters={filters}
+      filterOptions={filtersQuery.data}
+      onChange={onChange}
+      onReset={onReset}
+      onApply={onApply}
+    />
+  );
 }
 
 export function OverviewPage() {
-  const { params } = useDashboardContext()
+  const {
+    draftFilters,
+    appliedParams,
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  } = useRouteFilters();
   const overviewQuery = useOverviewQuery({
-    year: params.year,
-    quarter: params.quarter,
-  })
+    year: appliedParams.year,
+    quarter: appliedParams.quarter,
+  });
 
   return (
-    <Section id="tong-quan" title="Tổng quan">
-      {overviewQuery.isError ? (
-        <QueryError error={overviewQuery.error} onRetry={overviewQuery.refetch} />
-      ) : (
-        <KpiGrid data={overviewQuery.data} isLoading={overviewQuery.isLoading} />
-      )}
-    </Section>
-  )
+    <>
+      <RouteFilterBar
+        filters={draftFilters}
+        onChange={setDraftFilters}
+        onReset={resetFilters}
+        onApply={applyFilters}
+      />
+      <Section id="tong-quan" title="Tổng quan">
+        {overviewQuery.isError ? (
+          <QueryError
+            error={overviewQuery.error}
+            onRetry={overviewQuery.refetch}
+          />
+        ) : (
+          <KpiGrid
+            data={overviewQuery.data}
+            isLoading={overviewQuery.isLoading}
+          />
+        )}
+      </Section>
+    </>
+  );
 }
 
 export function TrendsPage() {
-  const { params } = useDashboardContext()
-  return <TrendsSection params={params} />
+  const {
+    draftFilters,
+    appliedParams,
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  } = useRouteFilters();
+
+  return (
+    <>
+      <RouteFilterBar
+        filters={draftFilters}
+        onChange={setDraftFilters}
+        onReset={resetFilters}
+        onApply={applyFilters}
+      />
+      <TrendsSection params={appliedParams} />
+    </>
+  );
 }
 
 export function PositionsPage() {
-  const { params } = useDashboardContext()
-  return <PositionsSection params={params} />
+  const {
+    draftFilters,
+    appliedParams,
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  } = useRouteFilters();
+
+  return (
+    <>
+      <RouteFilterBar
+        filters={draftFilters}
+        onChange={setDraftFilters}
+        onReset={resetFilters}
+        onApply={applyFilters}
+      />
+      <PositionsSection params={appliedParams} />
+    </>
+  );
 }
 
 export function SkillsPage() {
-  const { params } = useDashboardContext()
-  return <SkillsSection params={params} />
+  const {
+    draftFilters,
+    appliedParams,
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  } = useRouteFilters();
+
+  return (
+    <>
+      <RouteFilterBar
+        filters={draftFilters}
+        onChange={setDraftFilters}
+        onReset={resetFilters}
+        onApply={applyFilters}
+      />
+      <SkillsSection params={appliedParams} />
+    </>
+  );
 }
 
 export function SalaryPage() {
-  const { params } = useDashboardContext()
-  return <SalarySection params={params} />
+  const {
+    draftFilters,
+    appliedParams,
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  } = useRouteFilters();
+
+  return (
+    <>
+      <RouteFilterBar
+        filters={draftFilters}
+        onChange={setDraftFilters}
+        onReset={resetFilters}
+        onApply={applyFilters}
+      />
+      <SalarySection params={appliedParams} />
+    </>
+  );
 }
 
 export function LocationPage() {
-  const { params } = useDashboardContext()
-  return <LocationSection params={params} />
+  const {
+    draftFilters,
+    appliedParams,
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  } = useRouteFilters();
+
+  return (
+    <>
+      <RouteFilterBar
+        filters={draftFilters}
+        onChange={setDraftFilters}
+        onReset={resetFilters}
+        onApply={applyFilters}
+      />
+      <LocationSection params={appliedParams} />
+    </>
+  );
 }
 
 export function CompanyPage() {
-  const { params } = useDashboardContext()
-  return <CompanySection params={params} />
+  const {
+    draftFilters,
+    appliedParams,
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  } = useRouteFilters();
+
+  return (
+    <>
+      <RouteFilterBar
+        filters={draftFilters}
+        onChange={setDraftFilters}
+        onReset={resetFilters}
+        onApply={applyFilters}
+      />
+      <CompanySection params={appliedParams} />
+    </>
+  );
 }
 
 export function LevelPage() {
-  const { params } = useDashboardContext()
-  return <LevelSection params={params} />
+  const {
+    draftFilters,
+    appliedParams,
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  } = useRouteFilters();
+
+  return (
+    <>
+      <RouteFilterBar
+        filters={draftFilters}
+        onChange={setDraftFilters}
+        onReset={resetFilters}
+        onApply={applyFilters}
+      />
+      <LevelSection params={appliedParams} />
+    </>
+  );
 }
 
 export function JobsPage() {
-  const { params } = useDashboardContext()
-  return <JobsSection params={params} />
+  const {
+    draftFilters,
+    appliedParams,
+    setDraftFilters,
+    applyFilters,
+    resetFilters,
+  } = useRouteFilters();
+
+  return (
+    <>
+      <RouteFilterBar
+        filters={draftFilters}
+        onChange={setDraftFilters}
+        onReset={resetFilters}
+        onApply={applyFilters}
+      />
+      <JobsSection params={appliedParams} />
+    </>
+  );
 }
 
 export function UnknownRoute() {
-  return <Navigate to="/" replace />
+  return <Navigate to="/" replace />;
 }

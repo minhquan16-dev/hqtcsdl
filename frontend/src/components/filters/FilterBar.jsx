@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button"
+import { ListFilter } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -6,15 +7,18 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { FILTER_DEFAULTS } from "@/lib/constants"
-import { SearchableCombobox } from "./SearchableCombobox"
+} from "@/components/ui/select";
+import { FILTER_DEFAULTS } from "@/lib/constants";
+import { SearchableCombobox } from "./SearchableCombobox";
 
 function SelectFilter({ label, value, options = [], placeholder, onChange }) {
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <Select value={value || "all"} onValueChange={(next) => onChange(next === "all" ? "" : next)}>
+      <Select
+        value={value || "all"}
+        onValueChange={(next) => onChange(next === "all" ? "" : next)}
+      >
         <SelectTrigger className="h-9 w-full bg-muted/50">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
@@ -30,11 +34,17 @@ function SelectFilter({ label, value, options = [], placeholder, onChange }) {
         </SelectContent>
       </Select>
     </div>
-  )
+  );
 }
 
-export function FilterBar({ filters, filterOptions, onChange, onReset }) {
-  const update = (key, value) => onChange({ ...filters, [key]: value })
+export function FilterBar({
+  filters,
+  filterOptions,
+  onChange,
+  onReset,
+  onApply,
+}) {
+  const update = (key, value) => onChange({ ...filters, [key]: value });
 
   return (
     <div className="border-b pb-5">
@@ -50,8 +60,8 @@ export function FilterBar({ filters, filterOptions, onChange, onReset }) {
           label="Quý"
           value={filters.quarter}
           options={(filterOptions?.nhanQuy || []).map((label) => {
-            const match = String(label).match(/Q([1-4])/i)
-            return match ? match[1] : label
+            const match = String(label).match(/Q([1-4])/i);
+            return match ? match[1] : label;
           })}
           placeholder="Chọn quý"
           onChange={(value) => update("quarter", value)}
@@ -93,15 +103,27 @@ export function FilterBar({ filters, filterOptions, onChange, onReset }) {
             onChange={(value) => update("company", value)}
           />
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-9 whitespace-nowrap md:w-fit md:justify-self-end xl:justify-self-auto"
-          onClick={() => onReset(FILTER_DEFAULTS)}
-        >
-          Xóa bộ lọc
-        </Button>
+        <div className="flex items-center gap-2 md:justify-self-end xl:justify-self-auto">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-9 whitespace-nowrap"
+            onClick={() => onReset(FILTER_DEFAULTS)}
+          >
+            Xóa bộ lọc
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            className="h-9 whitespace-nowrap"
+            onClick={onApply}
+          >
+            <ListFilter data-icon="inline-start"/>
+            Lọc
+          </Button>
+        </div>
       </div>
     </div>
-  )
+  );
 }

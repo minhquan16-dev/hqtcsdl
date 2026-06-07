@@ -24,7 +24,7 @@ export function EmptyState({ title = "Chưa có dữ liệu", description }) {
     <div className="flex min-h-36 flex-col items-center justify-center gap-2 rounded-3xl border border-dashed bg-muted/30 p-6 text-center">
       <p className="text-sm font-medium">{title}</p>
       <p className="max-w-md text-sm text-muted-foreground">
-        {description || "Hãy thử đổi bộ lọc hoặc kiểm tra dữ liệu backend."}
+        {description || "Hãy thử đổi bộ lọc hoặc kiểm tra dữ liệu backend"}
       </p>
     </div>
   )
