@@ -149,7 +149,7 @@ export function HorizontalBarChart({
             width={92}
           />
           <Tooltip content={<ChartTooltip />} />
-          <Bar dataKey={valueKey} name={valueName} fill="var(--chart-4)" radius={[0, 8, 8, 0]} />
+          <Bar dataKey={valueKey} name={valueName} fill="var(--chart-2)" radius={[0, 8, 8, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -220,7 +220,7 @@ export function MarketScatterChart({
           />
           <ZAxis type="number" dataKey={zKey} range={[80, 520]} />
           <Tooltip content={<ScatterTooltip />} />
-          <Scatter data={chartData} fill="var(--chart-4)" />
+          <Scatter data={chartData} fill="var(--chart-2)" />
         </ScatterChart>
       </ResponsiveContainer>
     </div>
