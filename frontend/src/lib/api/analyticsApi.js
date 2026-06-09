@@ -86,11 +86,6 @@ export const analyticsApi = {
       params: cleanParams(params),
     });
   },
-  getWards(params) {
-    return axiosClient.get("/api/analytics/locations/wards", {
-      params: cleanParams(params),
-    });
-  },
   getMarketsCities(params) {
     return axiosClient.get("/api/analytics/markets/cities", {
       params: cleanParams(params),

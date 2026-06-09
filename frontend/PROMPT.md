@@ -11,7 +11,7 @@ Quan trọng:
 * Không tạo file `.ts` hoặc `.tsx`.
 * Dùng `.js` và `.jsx`.
 * Phải dùng preset shadcn này:
-  `npx shadcn@latest init --preset b1tf4zFsu --template vite --pointer`
+  `npx shadcn@latest init --preset b3SRvuwbo --template vite --pointer`
 
 Mục tiêu:
 Xây dựng frontend React Vite hoàn chỉnh, đẹp, sạch, có gu, không AI slop, bám tuyệt đối theo `backend/docs/api-spec.md`.

@@ -45,7 +45,7 @@ const BREAKDOWN_FILTER_FIELDS = {
 
 const BREAKDOWN_FALLBACKS = {
   quarter: "month",
-  city: "ward",
+  city: "position",
   skill: "position",
   position: "skill",
   company: "position",

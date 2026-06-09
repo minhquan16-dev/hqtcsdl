@@ -23,19 +23,12 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useFiltersQuery } from "@/hooks/queries/useFiltersQuery";
 import { useOverviewQuery } from "@/hooks/queries/useOverviewQuery";
 import { FILTER_DEFAULTS, NAV_ITEMS } from "@/lib/constants";
+import {
+  getAllowedFilters,
+  getFilterDefaults,
+  sanitizeRouteParams,
+} from "@/lib/routeFilters";
 import { cn } from "@/lib/utils";
-
-function cleanDashboardParams(filters) {
-  return {
-    year: filters.year,
-    quarter: filters.quarter,
-    city: filters.city,
-    level: filters.level,
-    position: filters.position,
-    skill: filters.skill,
-    company: filters.company,
-  };
-}
 
 function Sidebar() {
   return (
@@ -111,6 +104,20 @@ function Header() {
 
 export function DashboardLayout() {
   const filtersQuery = useFiltersQuery();
+  const [draftFilters, setDraftFilters] = useState(FILTER_DEFAULTS);
+  const [appliedFilters, setAppliedFilters] = useState(FILTER_DEFAULTS);
+  const [requestId, setRequestId] = useState(0);
+
+  function applyFilters() {
+    setAppliedFilters(draftFilters);
+    setRequestId((current) => current + 1);
+  }
+
+  function resetFilters(routeKey) {
+    setDraftFilters((current) => getFilterDefaults(current, routeKey));
+    setAppliedFilters((current) => getFilterDefaults(current, routeKey));
+    setRequestId((current) => current + 1);
+  }
 
   return (
     <TooltipProvider>
@@ -121,7 +128,19 @@ export function DashboardLayout() {
             <Header />
             <MobileNav />
             <div className="mx-auto flex max-w-[1500px] flex-col gap-6 px-4 py-6 md:px-6">
-              <Outlet context={{ filtersQuery }} />
+              <Outlet
+                context={{
+                  filtersQuery,
+                  dashboardFilters: {
+                    draftFilters,
+                    appliedFilters,
+                    requestId,
+                    setDraftFilters,
+                    applyFilters,
+                    resetFilters,
+                  },
+                }}
+              />
             </div>
           </main>
         </div>
@@ -134,35 +153,25 @@ function useDashboardContext() {
   return useOutletContext();
 }
 
-function useRouteFilters() {
-  const [draftFilters, setDraftFilters] = useState(FILTER_DEFAULTS);
-  const [appliedFilters, setAppliedFilters] = useState(FILTER_DEFAULTS);
-  const [requestId, setRequestId] = useState(0);
-
-  function applyFilters() {
-    setAppliedFilters(draftFilters);
-    setRequestId((current) => current + 1);
-  }
-
-  function resetFilters() {
-    setDraftFilters(FILTER_DEFAULTS);
-    setAppliedFilters(FILTER_DEFAULTS);
-    setRequestId((current) => current + 1);
-  }
+function useRouteFilters(routeKey) {
+  const { dashboardFilters } = useDashboardContext();
 
   return {
-    draftFilters,
-    appliedParams: {
-      ...cleanDashboardParams(appliedFilters),
-      __requestId: requestId,
-    },
-    setDraftFilters,
-    applyFilters,
-    resetFilters,
+    draftFilters: dashboardFilters.draftFilters,
+    appliedParams: sanitizeRouteParams(
+      {
+        ...dashboardFilters.appliedFilters,
+        __requestId: dashboardFilters.requestId,
+      },
+      routeKey,
+    ),
+    setDraftFilters: dashboardFilters.setDraftFilters,
+    applyFilters: dashboardFilters.applyFilters,
+    resetFilters: () => dashboardFilters.resetFilters(routeKey),
   };
 }
 
-function RouteFilterBar({ filters, onChange, onReset, onApply }) {
+function RouteFilterBar({ routeKey, filters, onChange, onReset, onApply }) {
   const { filtersQuery } = useDashboardContext();
 
   if (filtersQuery.isError) {
@@ -174,6 +183,7 @@ function RouteFilterBar({ filters, onChange, onReset, onApply }) {
   return (
     <FilterBar
       filters={filters}
+      filterKeys={getAllowedFilters(routeKey)}
       filterOptions={filtersQuery.data}
       onChange={onChange}
       onReset={onReset}
@@ -189,7 +199,7 @@ export function OverviewPage() {
     setDraftFilters,
     applyFilters,
     resetFilters,
-  } = useRouteFilters();
+  } = useRouteFilters("overview");
   const overviewQuery = useOverviewQuery({
     year: appliedParams.year,
     quarter: appliedParams.quarter,
@@ -198,6 +208,7 @@ export function OverviewPage() {
   return (
     <>
       <RouteFilterBar
+        routeKey="overview"
         filters={draftFilters}
         onChange={setDraftFilters}
         onReset={resetFilters}
@@ -227,11 +238,12 @@ export function TrendsPage() {
     setDraftFilters,
     applyFilters,
     resetFilters,
-  } = useRouteFilters();
+  } = useRouteFilters("trends");
 
   return (
     <>
       <RouteFilterBar
+        routeKey="trends"
         filters={draftFilters}
         onChange={setDraftFilters}
         onReset={resetFilters}
@@ -249,11 +261,12 @@ export function PositionsPage() {
     setDraftFilters,
     applyFilters,
     resetFilters,
-  } = useRouteFilters();
+  } = useRouteFilters("positions");
 
   return (
     <>
       <RouteFilterBar
+        routeKey="positions"
         filters={draftFilters}
         onChange={setDraftFilters}
         onReset={resetFilters}
@@ -271,11 +284,12 @@ export function SkillsPage() {
     setDraftFilters,
     applyFilters,
     resetFilters,
-  } = useRouteFilters();
+  } = useRouteFilters("skills");
 
   return (
     <>
       <RouteFilterBar
+        routeKey="skills"
         filters={draftFilters}
         onChange={setDraftFilters}
         onReset={resetFilters}
@@ -293,11 +307,12 @@ export function SalaryPage() {
     setDraftFilters,
     applyFilters,
     resetFilters,
-  } = useRouteFilters();
+  } = useRouteFilters("salary");
 
   return (
     <>
       <RouteFilterBar
+        routeKey="salary"
         filters={draftFilters}
         onChange={setDraftFilters}
         onReset={resetFilters}
@@ -315,11 +330,12 @@ export function LocationPage() {
     setDraftFilters,
     applyFilters,
     resetFilters,
-  } = useRouteFilters();
+  } = useRouteFilters("location");
 
   return (
     <>
       <RouteFilterBar
+        routeKey="location"
         filters={draftFilters}
         onChange={setDraftFilters}
         onReset={resetFilters}
@@ -337,11 +353,12 @@ export function CompanyPage() {
     setDraftFilters,
     applyFilters,
     resetFilters,
-  } = useRouteFilters();
+  } = useRouteFilters("company");
 
   return (
     <>
       <RouteFilterBar
+        routeKey="company"
         filters={draftFilters}
         onChange={setDraftFilters}
         onReset={resetFilters}
@@ -359,11 +376,12 @@ export function LevelPage() {
     setDraftFilters,
     applyFilters,
     resetFilters,
-  } = useRouteFilters();
+  } = useRouteFilters("level");
 
   return (
     <>
       <RouteFilterBar
+        routeKey="level"
         filters={draftFilters}
         onChange={setDraftFilters}
         onReset={resetFilters}
@@ -381,11 +399,12 @@ export function JobsPage() {
     setDraftFilters,
     applyFilters,
     resetFilters,
-  } = useRouteFilters();
+  } = useRouteFilters("jobs");
 
   return (
     <>
       <RouteFilterBar
+        routeKey="jobs"
         filters={draftFilters}
         onChange={setDraftFilters}
         onReset={resetFilters}

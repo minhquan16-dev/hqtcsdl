@@ -9,13 +9,6 @@ export function useLocationsQuery(params) {
   })
 }
 
-export function useWardsQuery(params) {
-  return useQuery({
-    queryKey: queryKeys.analytics.wards(params),
-    queryFn: () => analyticsApi.getWards(params),
-  })
-}
-
 export function useMarketsCitiesQuery(params) {
   return useQuery({
     queryKey: queryKeys.analytics.marketsCities(params),

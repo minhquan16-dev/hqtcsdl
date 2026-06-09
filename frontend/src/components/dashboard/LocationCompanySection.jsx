@@ -18,18 +18,11 @@ import {
 import {
   useLocationsQuery,
   useMarketsCitiesQuery,
-  useWardsQuery,
 } from "@/hooks/queries/useLocationQueries";
 import { formatExperience, formatNumber, formatSalary } from "@/lib/format";
 
 export function LocationSection({ params }) {
   const locationsQuery = useLocationsQuery({
-    year: params.year,
-    quarter: params.quarter,
-    city: params.city,
-    limit: 10,
-  });
-  const wardsQuery = useWardsQuery({
     year: params.year,
     quarter: params.quarter,
     city: params.city,
@@ -59,24 +52,6 @@ export function LocationSection({ params }) {
                   <HorizontalBarChart
                     data={data}
                     labelKey="tenThanhPho"
-                    valueKey="soTin"
-                  />
-                )}
-              </QueryBoundary>
-            ),
-          },
-          {
-            value: "wards",
-            label: "Phường/xã",
-            title: "Phường/xã",
-            description:
-              "Phân bổ tin tuyển dụng theo phường/xã trong bộ lọc hiện tại",
-            content: (
-              <QueryBoundary query={wardsQuery}>
-                {(data) => (
-                  <HorizontalBarChart
-                    data={data}
-                    labelKey="tenPhuongXa"
                     valueKey="soTin"
                   />
                 )}

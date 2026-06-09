@@ -8,7 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FILTER_DEFAULTS } from "@/lib/constants";
+import { FILTER_FIELD_CONFIG } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 import { SearchableCombobox } from "./SearchableCombobox";
 
 function SelectFilter({ label, value, options = [], placeholder, onChange }) {
@@ -39,77 +40,66 @@ function SelectFilter({ label, value, options = [], placeholder, onChange }) {
 
 export function FilterBar({
   filters,
+  filterKeys = [],
   filterOptions,
   onChange,
   onReset,
   onApply,
 }) {
   const update = (key, value) => onChange({ ...filters, [key]: value });
+  const activeFields = filterKeys
+    .map((key) => ({
+      key,
+      config: FILTER_FIELD_CONFIG[key],
+    }))
+    .filter((field) => field.config);
+
+  function renderFilterField({ key, config }) {
+    if (config.type === "select") {
+      const options = (filterOptions?.[config.optionsKey] || []).map((option) => {
+        if (key !== "quarter") return option;
+
+        const match = String(option).match(/Q([1-4])/i);
+        return match ? match[1] : option;
+      });
+
+      return (
+        <div key={key} className={cn("min-w-0", config.className)}>
+          <SelectFilter
+            label={config.label}
+            value={filters[key]}
+            options={options}
+            placeholder={config.placeholder}
+            onChange={(value) => update(key, value)}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div key={key} className={cn("min-w-0", config.className)}>
+        <SearchableCombobox
+          label={config.label}
+          value={filters[key]}
+          options={filterOptions?.[config.optionsKey] || []}
+          placeholder={config.placeholder}
+          onChange={(value) => update(key, value)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="border-b pb-5">
-      <div className="grid items-end gap-3 md:grid-cols-2 xl:grid-cols-[0.7fr_0.7fr_1fr_1fr_1fr_1fr_1.4fr_auto]">
-        <SelectFilter
-          label="Năm"
-          value={filters.year}
-          options={filterOptions?.nam || []}
-          placeholder="Chọn năm"
-          onChange={(value) => update("year", value)}
-        />
-        <SelectFilter
-          label="Quý"
-          value={filters.quarter}
-          options={(filterOptions?.nhanQuy || []).map((label) => {
-            const match = String(label).match(/Q([1-4])/i);
-            return match ? match[1] : label;
-          })}
-          placeholder="Chọn quý"
-          onChange={(value) => update("quarter", value)}
-        />
-        <SearchableCombobox
-          label="Thành phố"
-          value={filters.city}
-          options={filterOptions?.tenThanhPho || []}
-          placeholder="Tất cả thành phố"
-          onChange={(value) => update("city", value)}
-        />
-        <SearchableCombobox
-          label="Cấp bậc"
-          value={filters.level}
-          options={filterOptions?.tenCapBac || []}
-          placeholder="Tất cả cấp bậc"
-          onChange={(value) => update("level", value)}
-        />
-        <SearchableCombobox
-          label="Vị trí"
-          value={filters.position}
-          options={filterOptions?.tenViTriChuan || []}
-          placeholder="Tất cả vị trí"
-          onChange={(value) => update("position", value)}
-        />
-        <SearchableCombobox
-          label="Kỹ năng"
-          value={filters.skill}
-          options={filterOptions?.tenKyNang || []}
-          placeholder="Tất cả kỹ năng"
-          onChange={(value) => update("skill", value)}
-        />
-        <div className="md:col-span-2 xl:col-span-1">
-          <SearchableCombobox
-            label="Công ty"
-            value={filters.company}
-            options={filterOptions?.tenCongTy || []}
-            placeholder="Tất cả công ty"
-            onChange={(value) => update("company", value)}
-          />
-        </div>
-        <div className="flex items-center gap-2 md:justify-self-end xl:justify-self-auto">
+      <div className="flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-end">
+        {activeFields.map(renderFilterField)}
+        <div className="flex items-center gap-2 xl:ml-auto">
           <Button
             type="button"
             variant="outline"
             size="sm"
             className="h-9 whitespace-nowrap"
-            onClick={() => onReset(FILTER_DEFAULTS)}
+            onClick={onReset}
           >
             Xóa bộ lọc
           </Button>
