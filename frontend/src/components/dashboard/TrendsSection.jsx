@@ -1,6 +1,6 @@
 import {
   SimpleBarChart,
-  SimpleLineChart,
+  TrendAreaChart,
 } from "@/components/charts/SimpleCharts";
 import { QueryBoundary } from "@/components/common/QueryState";
 import { Section } from "@/components/common/Section";
@@ -38,7 +38,7 @@ export function TrendsSection({ params }) {
             content: (
               <QueryBoundary query={quarterQuery}>
                 {(data) => (
-                  <SimpleLineChart
+                  <TrendAreaChart
                     data={sortQuarterRows(data)}
                     labelKey="nhanQuy"
                     valueKey="soTin"

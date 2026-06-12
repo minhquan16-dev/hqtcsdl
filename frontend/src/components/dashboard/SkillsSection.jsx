@@ -1,4 +1,7 @@
-import { HorizontalBarChart } from "@/components/charts/SimpleCharts";
+import {
+  CategoryTreemap,
+  HorizontalBarChart,
+} from "@/components/charts/SimpleCharts";
 import { DataTable } from "@/components/common/DataTable";
 import { QueryBoundary } from "@/components/common/QueryState";
 import { Section } from "@/components/common/Section";
@@ -43,23 +46,30 @@ export function SkillsSection({ params }) {
             content: (
               <QueryBoundary query={skillsQuery}>
                 {(data) => (
-                  <DataTable
-                    rows={data}
-                    columns={[
-                      { key: "xepHang", label: "#" },
-                      { key: "tenKyNang", label: "Kỹ năng" },
-                      {
-                        key: "soTin",
-                        label: "Số tin",
-                        render: (row) => formatNumber(row.soTin),
-                      },
-                      {
-                        key: "tyLeTheoTongTin",
-                        label: "Tỷ lệ",
-                        render: (row) => formatPercent(row.tyLeTheoTongTin),
-                      },
-                    ]}
-                  />
+                  <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+                    <CategoryTreemap
+                      data={data}
+                      labelKey="tenKyNang"
+                      valueKey="soTin"
+                    />
+                    <DataTable
+                      rows={data}
+                      columns={[
+                        { key: "xepHang", label: "#" },
+                        { key: "tenKyNang", label: "Kỹ năng" },
+                        {
+                          key: "soTin",
+                          label: "Số tin",
+                          render: (row) => formatNumber(row.soTin),
+                        },
+                        {
+                          key: "tyLeTheoTongTin",
+                          label: "Tỷ lệ",
+                          render: (row) => formatPercent(row.tyLeTheoTongTin),
+                        },
+                      ]}
+                    />
+                  </div>
                 )}
               </QueryBoundary>
             ),

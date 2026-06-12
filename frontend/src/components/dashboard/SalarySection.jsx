@@ -1,5 +1,6 @@
 import {
   HorizontalBarChart,
+  SalaryRangeChart,
   SimpleBarChart,
 } from "@/components/charts/SimpleCharts";
 import { DataTable } from "@/components/common/DataTable";
@@ -54,27 +55,30 @@ export function SalarySection({ params }) {
             content: (
               <QueryBoundary query={byPositionQuery}>
                 {(data) => (
-                  <DataTable
-                    rows={data}
-                    columns={[
-                      { key: "tenViTriChuan", label: "Vị trí" },
-                      {
-                        key: "soTin",
-                        label: "Số tin",
-                        render: (row) => formatNumber(row.soTin),
-                      },
-                      {
-                        key: "soTinCoLuong",
-                        label: "Có lương",
-                        render: (row) => formatNumber(row.soTinCoLuong),
-                      },
-                      {
-                        key: "luongTrungBinh",
-                        label: "Lương TB",
-                        render: (row) => formatSalary(row.luongTrungBinh),
-                      },
-                    ]}
-                  />
+                  <div className="flex flex-col gap-5">
+                    <SalaryRangeChart data={data} labelKey="tenViTriChuan" />
+                    <DataTable
+                      rows={data}
+                      columns={[
+                        { key: "tenViTriChuan", label: "Vị trí" },
+                        {
+                          key: "soTin",
+                          label: "Số tin",
+                          render: (row) => formatNumber(row.soTin),
+                        },
+                        {
+                          key: "soTinCoLuong",
+                          label: "Có lương",
+                          render: (row) => formatNumber(row.soTinCoLuong),
+                        },
+                        {
+                          key: "luongTrungBinh",
+                          label: "Lương TB",
+                          render: (row) => formatSalary(row.luongTrungBinh),
+                        },
+                      ]}
+                    />
+                  </div>
                 )}
               </QueryBoundary>
             ),
