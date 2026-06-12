@@ -24,7 +24,7 @@ import {
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { useFiltersQuery } from "@/hooks/queries/useFiltersQuery";
 import { useOverviewQuery } from "@/hooks/queries/useOverviewQuery";
-import { FILTER_DEFAULTS } from "@/lib/constants";
+import { FILTER_DEFAULTS, NAV_ITEMS } from "@/lib/constants";
 import {
   getAllowedFilters,
   getFilterDefaults,
@@ -147,6 +147,37 @@ function RouteFilterBar({ routeKey, filters, onChange, onReset, onApply }) {
   );
 }
 
+function getRouteMeta(routeKey) {
+  return NAV_ITEMS.find((item) => item.routeKey === routeKey);
+}
+
+function DashboardRoutePage({
+  routeKey,
+  filters,
+  onChange,
+  onReset,
+  onApply,
+  children,
+}) {
+  const routeMeta = getRouteMeta(routeKey);
+
+  return (
+    <>
+      <h1 className="text-2xl font-semibold tracking-tight">
+        {routeMeta?.label}
+      </h1>
+      <RouteFilterBar
+        routeKey={routeKey}
+        filters={filters}
+        onChange={onChange}
+        onReset={onReset}
+        onApply={onApply}
+      />
+      {children}
+    </>
+  );
+}
+
 export function OverviewPage() {
   const {
     draftFilters,
@@ -161,15 +192,14 @@ export function OverviewPage() {
   });
 
   return (
-    <>
-      <RouteFilterBar
-        routeKey="overview"
-        filters={draftFilters}
-        onChange={setDraftFilters}
-        onReset={resetFilters}
-        onApply={applyFilters}
-      />
-      <Section id="tong-quan" title="Tổng quan">
+    <DashboardRoutePage
+      routeKey="overview"
+      filters={draftFilters}
+      onChange={setDraftFilters}
+      onReset={resetFilters}
+      onApply={applyFilters}
+    >
+      <Section id="tong-quan">
         {overviewQuery.isError ? (
           <QueryError
             error={overviewQuery.error}
@@ -182,7 +212,7 @@ export function OverviewPage() {
           />
         )}
       </Section>
-    </>
+    </DashboardRoutePage>
   );
 }
 
@@ -196,16 +226,15 @@ export function TrendsPage() {
   } = useRouteFilters("trends");
 
   return (
-    <>
-      <RouteFilterBar
-        routeKey="trends"
-        filters={draftFilters}
-        onChange={setDraftFilters}
-        onReset={resetFilters}
-        onApply={applyFilters}
-      />
+    <DashboardRoutePage
+      routeKey="trends"
+      filters={draftFilters}
+      onChange={setDraftFilters}
+      onReset={resetFilters}
+      onApply={applyFilters}
+    >
       <TrendsSection params={appliedParams} />
-    </>
+    </DashboardRoutePage>
   );
 }
 
@@ -219,16 +248,15 @@ export function PositionsPage() {
   } = useRouteFilters("positions");
 
   return (
-    <>
-      <RouteFilterBar
-        routeKey="positions"
-        filters={draftFilters}
-        onChange={setDraftFilters}
-        onReset={resetFilters}
-        onApply={applyFilters}
-      />
+    <DashboardRoutePage
+      routeKey="positions"
+      filters={draftFilters}
+      onChange={setDraftFilters}
+      onReset={resetFilters}
+      onApply={applyFilters}
+    >
       <PositionsSection params={appliedParams} />
-    </>
+    </DashboardRoutePage>
   );
 }
 
@@ -242,16 +270,15 @@ export function SkillsPage() {
   } = useRouteFilters("skills");
 
   return (
-    <>
-      <RouteFilterBar
-        routeKey="skills"
-        filters={draftFilters}
-        onChange={setDraftFilters}
-        onReset={resetFilters}
-        onApply={applyFilters}
-      />
+    <DashboardRoutePage
+      routeKey="skills"
+      filters={draftFilters}
+      onChange={setDraftFilters}
+      onReset={resetFilters}
+      onApply={applyFilters}
+    >
       <SkillsSection params={appliedParams} />
-    </>
+    </DashboardRoutePage>
   );
 }
 
@@ -265,16 +292,15 @@ export function SalaryPage() {
   } = useRouteFilters("salary");
 
   return (
-    <>
-      <RouteFilterBar
-        routeKey="salary"
-        filters={draftFilters}
-        onChange={setDraftFilters}
-        onReset={resetFilters}
-        onApply={applyFilters}
-      />
+    <DashboardRoutePage
+      routeKey="salary"
+      filters={draftFilters}
+      onChange={setDraftFilters}
+      onReset={resetFilters}
+      onApply={applyFilters}
+    >
       <SalarySection params={appliedParams} />
-    </>
+    </DashboardRoutePage>
   );
 }
 
@@ -288,16 +314,15 @@ export function LocationPage() {
   } = useRouteFilters("location");
 
   return (
-    <>
-      <RouteFilterBar
-        routeKey="location"
-        filters={draftFilters}
-        onChange={setDraftFilters}
-        onReset={resetFilters}
-        onApply={applyFilters}
-      />
+    <DashboardRoutePage
+      routeKey="location"
+      filters={draftFilters}
+      onChange={setDraftFilters}
+      onReset={resetFilters}
+      onApply={applyFilters}
+    >
       <LocationSection params={appliedParams} />
-    </>
+    </DashboardRoutePage>
   );
 }
 
@@ -311,16 +336,15 @@ export function CompanyPage() {
   } = useRouteFilters("company");
 
   return (
-    <>
-      <RouteFilterBar
-        routeKey="company"
-        filters={draftFilters}
-        onChange={setDraftFilters}
-        onReset={resetFilters}
-        onApply={applyFilters}
-      />
+    <DashboardRoutePage
+      routeKey="company"
+      filters={draftFilters}
+      onChange={setDraftFilters}
+      onReset={resetFilters}
+      onApply={applyFilters}
+    >
       <CompanySection params={appliedParams} />
-    </>
+    </DashboardRoutePage>
   );
 }
 
@@ -334,16 +358,15 @@ export function LevelPage() {
   } = useRouteFilters("level");
 
   return (
-    <>
-      <RouteFilterBar
-        routeKey="level"
-        filters={draftFilters}
-        onChange={setDraftFilters}
-        onReset={resetFilters}
-        onApply={applyFilters}
-      />
+    <DashboardRoutePage
+      routeKey="level"
+      filters={draftFilters}
+      onChange={setDraftFilters}
+      onReset={resetFilters}
+      onApply={applyFilters}
+    >
       <LevelSection params={appliedParams} />
-    </>
+    </DashboardRoutePage>
   );
 }
 
@@ -357,16 +380,15 @@ export function JobsPage() {
   } = useRouteFilters("jobs");
 
   return (
-    <>
-      <RouteFilterBar
-        routeKey="jobs"
-        filters={draftFilters}
-        onChange={setDraftFilters}
-        onReset={resetFilters}
-        onApply={applyFilters}
-      />
+    <DashboardRoutePage
+      routeKey="jobs"
+      filters={draftFilters}
+      onChange={setDraftFilters}
+      onReset={resetFilters}
+      onApply={applyFilters}
+    >
       <JobsSection params={appliedParams} />
-    </>
+    </DashboardRoutePage>
   );
 }
 

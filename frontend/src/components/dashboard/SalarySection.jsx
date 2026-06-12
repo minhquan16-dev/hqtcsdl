@@ -43,7 +43,7 @@ export function SalarySection({ params }) {
   });
 
   return (
-    <Section id="luong" title="Phân tích lương">
+    <Section id="luong">
       <DashboardTabs
         defaultValue="position"
         tabs={[

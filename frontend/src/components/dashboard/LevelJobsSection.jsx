@@ -106,7 +106,7 @@ export function LevelSection({ params }) {
   }
 
   return (
-    <Section id="cap-bac" title="Cấp bậc và kinh nghiệm">
+    <Section id="cap-bac">
       <DashboardTabs
         value={activeTab}
         onValueChange={setActiveTab}
@@ -270,7 +270,7 @@ export function JobsSection({ params }) {
   });
 
   return (
-    <Section id="tong-hop" title="Bộ lọc tổng hợp">
+    <Section id="tong-hop">
       <div className="flex flex-col gap-4">
         <DashboardTabs
           value={selectedGroupBy}

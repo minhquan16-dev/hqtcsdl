@@ -80,8 +80,20 @@ const donutColors = [
   "var(--chart-5)",
 ]
 
+const treemapPastelColors = [
+  "oklch(0.84 0.07 28)",
+  "oklch(0.83 0.07 195)",
+  "oklch(0.86 0.065 82)",
+  "oklch(0.84 0.07 145)",
+  "oklch(0.84 0.06 285)",
+]
+
 function getColor(index) {
   return donutColors[index % donutColors.length]
+}
+
+function getTreemapColor(index) {
+  return treemapPastelColors[index % treemapPastelColors.length]
 }
 
 function formatRange(value) {
@@ -105,8 +117,34 @@ function SalaryTooltip({ active, payload, label }) {
   )
 }
 
+function formatTreemapLabel(name, width) {
+  const label = String(name ?? "")
+  const maxCharacters = Math.max(3, Math.floor((width - 18) / 7))
+  return label.length > maxCharacters
+    ? `${label.slice(0, Math.max(2, maxCharacters - 1))}…`
+    : label
+}
+
+function TreemapTooltip({ active, payload }) {
+  if (!active || !payload?.length) return null
+  const item = payload[0]?.payload
+  if (!item) return null
+
+  return (
+    <div className="rounded-2xl border bg-popover px-3 py-2 text-sm shadow-sm">
+      <p className="font-medium">{item.name}</p>
+      <div className="mt-1 flex flex-col gap-1 text-muted-foreground">
+        <span>Số tin: {item.value}</span>
+        {item.percent !== undefined ? <span>Tỷ lệ: {item.percent}%</span> : null}
+      </div>
+    </div>
+  )
+}
+
 function TreemapCell({ x, y, width, height, name, value, index }) {
   if (width < 24 || height < 24) return null
+  const canShowLabel = width > 42 && height > 34
+  const canShowValue = width > 52 && height > 52
 
   return (
     <g>
@@ -117,30 +155,32 @@ function TreemapCell({ x, y, width, height, name, value, index }) {
         height={height}
         rx={12}
         ry={12}
-        fill={getColor(index)}
+        fill={getTreemapColor(index)}
         stroke="var(--card)"
         strokeWidth={3}
       />
-      {width > 72 && height > 46 ? (
+      {canShowLabel ? (
         <>
           <text
             x={x + 12}
             y={y + 22}
-            fill="var(--primary-foreground)"
+            fill="var(--foreground)"
             fontSize={12}
             fontWeight={600}
           >
-            {formatAxisLabel(name)}
+            {formatTreemapLabel(name, width)}
           </text>
-          <text
-            x={x + 12}
-            y={y + 40}
-            fill="var(--primary-foreground)"
-            fillOpacity={0.72}
-            fontSize={11}
-          >
-            {value}
-          </text>
+          {canShowValue ? (
+            <text
+              x={x + 12}
+              y={y + 40}
+              fill="var(--foreground)"
+              fillOpacity={0.62}
+              fontSize={11}
+            >
+              {value}
+            </text>
+          ) : null}
         </>
       ) : null}
     </g>
@@ -268,11 +308,13 @@ export function CategoryTreemap({
   data,
   labelKey,
   valueKey,
+  percentKey,
   height = 300,
 }) {
   const chartData = (data || []).map((item) => ({
     name: item[labelKey],
     value: Number(item[valueKey]) || 0,
+    percent: percentKey ? item[percentKey] : undefined,
   }))
 
   return (
@@ -285,7 +327,7 @@ export function CategoryTreemap({
           aspectRatio={4 / 3}
           content={<TreemapCell />}
         >
-          <Tooltip content={<ChartTooltip />} />
+          <Tooltip content={<TreemapTooltip />} />
         </Treemap>
       </ResponsiveContainer>
     </div>

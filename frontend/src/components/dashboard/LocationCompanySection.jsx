@@ -37,7 +37,7 @@ export function LocationSection({ params }) {
   });
 
   return (
-    <Section id="dia-diem" title="Địa điểm và thị trường">
+    <Section id="dia-diem">
       <DashboardTabs
         defaultValue="cities"
         tabs={[
@@ -120,7 +120,7 @@ export function CompanySection({ params }) {
   });
 
   return (
-    <Section id="cong-ty" title="Công ty">
+    <Section id="cong-ty">
       <DashboardTabs
         defaultValue="top"
         tabs={[

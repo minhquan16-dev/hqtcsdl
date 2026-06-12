@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { FILTER_FIELD_CONFIG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { SearchableCombobox } from "./SearchableCombobox";
@@ -38,6 +39,48 @@ function SelectFilter({ label, value, options = [], placeholder, onChange }) {
   );
 }
 
+function formatRangeValue(value, unit) {
+  return `${new Intl.NumberFormat("vi-VN", {
+    maximumFractionDigits: 1,
+  }).format(value)} ${unit}`;
+}
+
+function RangeFilter({ config, filters, onChange }) {
+  const minValue = Number(filters[config.minKey] || config.min);
+  const maxValue = Number(filters[config.maxKey] || config.max);
+  const value = [minValue, maxValue];
+
+  function handleChange([nextMin, nextMax]) {
+    onChange({
+      ...filters,
+      [config.minKey]: nextMin === config.min ? "" : nextMin,
+      [config.maxKey]: nextMax === config.max ? "" : nextMax,
+    });
+  }
+
+  return (
+    <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs font-medium text-muted-foreground">
+          {config.label}
+        </span>
+        <span className="shrink-0 text-xs font-medium text-foreground">
+          {formatRangeValue(value[0], config.unit)} -{" "}
+          {formatRangeValue(value[1], config.unit)}
+        </span>
+      </div>
+      <Slider
+        min={config.min}
+        max={config.max}
+        step={config.step}
+        value={value}
+        onValueChange={handleChange}
+        aria-label={config.label}
+      />
+    </div>
+  );
+}
+
 export function FilterBar({
   filters,
   filterKeys = [],
@@ -55,6 +98,16 @@ export function FilterBar({
     .filter((field) => field.config);
 
   function renderFilterField({ key, config }) {
+    if (config.type === "range-peer") return null;
+
+    if (config.type === "range") {
+      return (
+        <div key={key} className={cn("min-w-0", config.className)}>
+          <RangeFilter config={config} filters={filters} onChange={onChange} />
+        </div>
+      );
+    }
+
     if (config.type === "select") {
       const options = (filterOptions?.[config.optionsKey] || []).map((option) => {
         if (key !== "quarter") return option;

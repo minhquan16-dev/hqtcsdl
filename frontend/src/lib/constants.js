@@ -20,6 +20,10 @@ export const FILTER_DEFAULTS = {
   position: "",
   skill: "",
   company: "",
+  salaryMin: "",
+  salaryMax: "",
+  experienceMin: "",
+  experienceMax: "",
 }
 
 export const FILTER_FIELD_CONFIG = {
@@ -72,6 +76,34 @@ export const FILTER_FIELD_CONFIG = {
     placeholder: "Tất cả công ty",
     className: "md:min-w-[260px] md:flex-[1.2]",
   },
+  salaryMin: {
+    label: "Khoảng lương",
+    type: "range",
+    minKey: "salaryMin",
+    maxKey: "salaryMax",
+    min: 0,
+    max: 100,
+    step: 5,
+    unit: "triệu",
+    className: "md:min-w-[260px] md:flex-1",
+  },
+  salaryMax: {
+    type: "range-peer",
+  },
+  experienceMin: {
+    label: "Kinh nghiệm",
+    type: "range",
+    minKey: "experienceMin",
+    maxKey: "experienceMax",
+    min: 0,
+    max: 10,
+    step: 0.5,
+    unit: "năm",
+    className: "md:min-w-[260px] md:flex-1",
+  },
+  experienceMax: {
+    type: "range-peer",
+  },
 }
 
 export const ROUTE_FILTER_FIELDS = {
@@ -83,7 +115,7 @@ export const ROUTE_FILTER_FIELDS = {
   location: ["year", "quarter", "city"],
   company: ["year", "quarter", "company"],
   level: ["year", "quarter", "level", "position"],
-  jobs: ["year", "quarter", "city", "level", "position", "skill", "company"],
+  jobs: ["year", "quarter", "city", "level", "position", "skill", "company", "salaryMin", "salaryMax", "experienceMin", "experienceMax"],
 }
 
 export const SORT_OPTIONS = [

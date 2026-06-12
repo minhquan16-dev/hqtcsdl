@@ -33,7 +33,7 @@ export function SkillsSection({ params }) {
   });
 
   return (
-    <Section id="ky-nang" title="Kỹ năng và ngôn ngữ">
+    <Section id="ky-nang">
       <DashboardTabs
         defaultValue="skills"
         tabs={[
@@ -51,6 +51,7 @@ export function SkillsSection({ params }) {
                       data={data}
                       labelKey="tenKyNang"
                       valueKey="soTin"
+                      percentKey="tyLeTheoTongTin"
                     />
                     <DataTable
                       rows={data}

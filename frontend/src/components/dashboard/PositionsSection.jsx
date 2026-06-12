@@ -47,7 +47,7 @@ export function PositionsSection({ params }) {
   }
 
   return (
-    <Section id="vi-tri" title="Phân tích vị trí">
+    <Section id="vi-tri">
       <DashboardTabs
         value={activeTab}
         onValueChange={setActiveTab}

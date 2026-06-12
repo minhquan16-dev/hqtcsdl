@@ -3,12 +3,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export function Section({ id, title, description, children }) {
   return (
     <section id={id} className="scroll-mt-24">
-      <div className="mb-4 flex flex-col gap-1">
-        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-        {description ? (
-          <p className="text-sm text-muted-foreground">{description}</p>
-        ) : null}
-      </div>
+      {title || description ? (
+        <div className="mb-4 flex flex-col gap-1">
+          {title ? (
+            <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+          ) : null}
+          {description ? (
+            <p className="text-sm text-muted-foreground">{description}</p>
+          ) : null}
+        </div>
+      ) : null}
       {children}
     </section>
   )

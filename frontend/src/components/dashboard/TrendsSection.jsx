@@ -26,7 +26,7 @@ export function TrendsSection({ params }) {
   });
 
   return (
-    <Section id="xu-huong" title="Xu hướng tuyển dụng">
+    <Section id="xu-huong">
       <DashboardTabs
         defaultValue="quarters"
         tabs={[
