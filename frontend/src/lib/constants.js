@@ -159,7 +159,7 @@ export const NAV_ITEMS = [
   {
     path: "/ky-nang",
     routeKey: "skills",
-    label: "Kỹ năng",
+    label: "Kỹ năng & Ngôn ngữ",
     description: "Khám phá các kỹ năng nổi bật, ngôn ngữ phổ biến và độ đồng xuất hiện.",
     icon: BrainCircuit,
   },
@@ -187,7 +187,7 @@ export const NAV_ITEMS = [
   {
     path: "/cap-bac",
     routeKey: "level",
-    label: "Cấp bậc",
+    label: "Cấp bậc & Kinh nghiệm",
     description: "Quan sát phân bố cấp bậc, kinh nghiệm và nhóm kỹ năng theo seniority.",
     icon: Layers3,
   },
