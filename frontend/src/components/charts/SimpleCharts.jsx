@@ -85,8 +85,8 @@ export function SimpleBarChart({
   return (
     <div style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 40 }}>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 40 }}>
+          <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
           <XAxis
             dataKey={labelKey}
             tickLine={false}
@@ -100,7 +100,7 @@ export function SimpleBarChart({
             textAnchor="end"
             height={72}
           />
-          <YAxis tickLine={false} axisLine={false} tick={axisTick} width={48} />
+          <YAxis tickLine={false} axisLine={false} tick={axisTick} width={56} />
           <Tooltip content={<ChartTooltip />} />
           <Bar
             dataKey={valueKey}
@@ -137,7 +137,7 @@ export function HorizontalBarChart({
           layout="vertical"
           margin={{ top: 8, right: 12, left: 8, bottom: 8 }}
         >
-          <CartesianGrid horizontal={false} strokeDasharray="3 3" />
+          <CartesianGrid horizontal={false} stroke="var(--border)" strokeDasharray="3 3" />
           <XAxis type="number" tickLine={false} axisLine={false} tick={axisTick} />
           <YAxis
             type="category"
@@ -199,8 +199,8 @@ export function MarketScatterChart({
   return (
     <div style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart margin={{ top: 12, right: 16, left: -8, bottom: 8 }}>
-          <CartesianGrid strokeDasharray="3 3" />
+        <ScatterChart margin={{ top: 12, right: 16, left: 0, bottom: 8 }}>
+          <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
           <XAxis
             type="number"
             dataKey={xKey}
@@ -239,8 +239,8 @@ export function SimpleLineChart({
   return (
     <div style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 10 }}>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 10 }}>
+          <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
           <XAxis
             dataKey={labelKey}
             tickLine={false}
@@ -252,7 +252,7 @@ export function SimpleLineChart({
             minTickGap={0}
             height={36}
           />
-          <YAxis tickLine={false} axisLine={false} tick={axisTick} width={48} />
+          <YAxis tickLine={false} axisLine={false} tick={axisTick} width={56} />
           <Tooltip content={<ChartTooltip />} />
           <Line
             type="monotone"

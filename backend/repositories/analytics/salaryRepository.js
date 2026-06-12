@@ -1,9 +1,12 @@
 const {
   applyLimit,
+  addDirectNameFilter,
+  appendWhereClauses,
   buildAggregateWhere,
   factWhere,
   orderBy,
   queryRecordset,
+  withoutFilters,
 } = require('./queryUtils');
 
 async function getSalaryByExperience(filters) {
@@ -46,7 +49,12 @@ async function getSalaryByCity(filters) {
 async function getSalaryBySkill(filters) {
   return queryRecordset((request) => {
     applyLimit(request, filters);
-    const where = factWhere(filters, request);
+    const directClauses = [];
+    addDirectNameFilter(filters, directClauses, request, 'skill', 'dk.tenKyNang');
+    const where = appendWhereClauses(
+      factWhere(withoutFilters(filters, ['skill']), request),
+      directClauses,
+    );
     return `
       SELECT TOP (@limit)
         dk.tenKyNang,

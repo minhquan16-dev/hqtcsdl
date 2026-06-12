@@ -1,6 +1,9 @@
 import { Panel } from "@/components/common/Section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
+import {
+  getTabsListClasses,
+  getTabsWrapperClasses,
+} from "./tabsLayout";
 
 export function DashboardTabs({
   value,
@@ -8,6 +11,7 @@ export function DashboardTabs({
   onValueChange,
   tabs,
   listClassName = "",
+  allowWrap = false,
 }) {
   return (
     <Tabs
@@ -15,8 +19,8 @@ export function DashboardTabs({
       defaultValue={defaultValue}
       onValueChange={onValueChange}
     >
-      <div className="overflow-x-auto pb-1">
-        <TabsList className={cn("min-w-max", listClassName)}>
+      <div className={getTabsWrapperClasses(allowWrap)}>
+        <TabsList className={getTabsListClasses(allowWrap, listClassName)}>
           {tabs.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               {tab.label}

@@ -1,9 +1,12 @@
 const {
   applyLimit,
+  addDirectNameFilter,
+  appendWhereClauses,
   buildAggregateWhere,
   factWhere,
   orderBy,
   queryRecordset,
+  withoutFilters,
 } = require('./queryUtils');
 
 async function getLocations(filters) {
@@ -29,7 +32,13 @@ async function getLocations(filters) {
 async function getWards(filters) {
   return queryRecordset((request) => {
     applyLimit(request, filters);
-    const where = factWhere(filters, request);
+    const directClauses = [];
+    addDirectNameFilter(filters, directClauses, request, 'city', 'dd.tenThanhPho');
+    addDirectNameFilter(filters, directClauses, request, 'ward', 'dd.tenPhuongXa');
+    const where = appendWhereClauses(
+      factWhere(withoutFilters(filters, ['city', 'ward']), request),
+      directClauses,
+    );
     return `
       SELECT TOP (@limit)
         dd.tenThanhPho,

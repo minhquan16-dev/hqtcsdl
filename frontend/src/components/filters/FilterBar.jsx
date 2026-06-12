@@ -90,7 +90,7 @@ export function FilterBar({
   }
 
   return (
-    <div className="border-b pb-5">
+    <div className="rounded-3xl border bg-card/70 p-4 text-card-foreground shadow-sm">
       <div className="flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-end">
         {activeFields.map(renderFilterField)}
         <div className="flex items-center gap-2 xl:ml-auto">

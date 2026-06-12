@@ -1,3 +1,15 @@
+import {
+  BadgeDollarSign,
+  BrainCircuit,
+  BriefcaseBusiness,
+  Building2,
+  ChartColumnIncreasing,
+  FolderKanban,
+  Layers3,
+  LayoutDashboard,
+  MapPinned,
+} from "lucide-react"
+
 export const DEFAULT_LIMIT = 10
 
 export const FILTER_DEFAULTS = {
@@ -91,13 +103,67 @@ export const BREAKDOWN_GROUPS = [
 ]
 
 export const NAV_ITEMS = [
-  { path: "/", label: "Tổng quan" },
-  { path: "/xu-huong", label: "Xu hướng" },
-  { path: "/vi-tri", label: "Vị trí" },
-  { path: "/ky-nang", label: "Kỹ năng" },
-  { path: "/luong", label: "Lương" },
-  { path: "/dia-diem", label: "Địa điểm" },
-  { path: "/cong-ty", label: "Công ty" },
-  { path: "/cap-bac", label: "Cấp bậc" },
-  { path: "/tong-hop", label: "Tổng hợp" },
+  {
+    path: "/",
+    routeKey: "overview",
+    label: "Tổng quan",
+    description: "Bức tranh tổng thể về quy mô tuyển dụng, lương và điểm nóng thị trường.",
+    icon: LayoutDashboard,
+  },
+  {
+    path: "/xu-huong",
+    routeKey: "trends",
+    label: "Xu hướng",
+    description: "Theo dõi biến động nhu cầu tuyển dụng theo quý và theo tháng.",
+    icon: ChartColumnIncreasing,
+  },
+  {
+    path: "/vi-tri",
+    routeKey: "positions",
+    label: "Vị trí",
+    description: "So sánh mức độ quan tâm, lương và kỹ năng đi kèm của từng vị trí.",
+    icon: BriefcaseBusiness,
+  },
+  {
+    path: "/ky-nang",
+    routeKey: "skills",
+    label: "Kỹ năng",
+    description: "Khám phá các kỹ năng nổi bật, ngôn ngữ phổ biến và độ đồng xuất hiện.",
+    icon: BrainCircuit,
+  },
+  {
+    path: "/luong",
+    routeKey: "salary",
+    label: "Lương",
+    description: "Nhìn nhanh mặt bằng lương theo vị trí, thành phố, kỹ năng và kinh nghiệm.",
+    icon: BadgeDollarSign,
+  },
+  {
+    path: "/dia-diem",
+    routeKey: "location",
+    label: "Địa điểm",
+    description: "So sánh thị trường tuyển dụng giữa các thành phố và cụm nhu cầu nổi bật.",
+    icon: MapPinned,
+  },
+  {
+    path: "/cong-ty",
+    routeKey: "company",
+    label: "Công ty",
+    description: "Theo dõi nhóm công ty tuyển dụng mạnh và phân bố theo lĩnh vực.",
+    icon: Building2,
+  },
+  {
+    path: "/cap-bac",
+    routeKey: "level",
+    label: "Cấp bậc",
+    description: "Quan sát phân bố cấp bậc, kinh nghiệm và nhóm kỹ năng theo seniority.",
+    icon: Layers3,
+  },
+  {
+    path: "/tong-hop",
+    routeKey: "jobs",
+    label: "Tổng hợp",
+    description: "Tổng hợp dữ liệu theo các lát cắt quan trọng sau khi áp dụng bộ lọc.",
+    icon: FolderKanban,
+  },
 ]

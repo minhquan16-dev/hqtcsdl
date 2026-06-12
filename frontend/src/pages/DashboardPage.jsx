@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Navigate, NavLink, Outlet, useOutletContext } from "react-router";
-import { ActivityIcon } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { Navigate, Outlet, useOutletContext } from "react-router";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
 import { QueryError } from "@/components/common/QueryState";
 import { Section } from "@/components/common/Section";
 import { FilterBar } from "@/components/filters/FilterBar";
@@ -19,88 +21,15 @@ import {
   JobsSection,
   LevelSection,
 } from "@/components/dashboard/LevelJobsSection";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { AppSidebar } from "@/components/layout/AppSidebar";
 import { useFiltersQuery } from "@/hooks/queries/useFiltersQuery";
 import { useOverviewQuery } from "@/hooks/queries/useOverviewQuery";
-import { FILTER_DEFAULTS, NAV_ITEMS } from "@/lib/constants";
+import { FILTER_DEFAULTS } from "@/lib/constants";
 import {
   getAllowedFilters,
   getFilterDefaults,
   sanitizeRouteParams,
 } from "@/lib/routeFilters";
-import { cn } from "@/lib/utils";
-
-function Sidebar() {
-  return (
-    <aside className="hidden w-60 shrink-0 border-r bg-sidebar/60 lg:block">
-      <div className="sticky top-0 flex h-dvh flex-col gap-6 p-5">
-        <div>
-          <div className="flex size-10 items-center justify-center rounded-3xl bg-primary text-primary-foreground">
-            <ActivityIcon />
-          </div>
-          {/* <h1 className="mt-4 text-lg font-semibold">IT Market Dashboard</h1> */}
-        </div>
-        <Separator />
-        <nav className="flex flex-col gap-1">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === "/"}
-              className={({ isActive }) =>
-                cn(
-                  "rounded-3xl px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                  isActive && "bg-muted text-foreground",
-                )
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-      </div>
-    </aside>
-  );
-}
-
-function MobileNav() {
-  return (
-    <nav className="flex gap-2 overflow-x-auto border-b px-4 py-3 lg:hidden">
-      {NAV_ITEMS.map((item) => (
-        <NavLink
-          key={item.path}
-          to={item.path}
-          end={item.path === "/"}
-          className={({ isActive }) =>
-            cn(
-              "shrink-0 rounded-3xl px-3 py-2 text-sm font-medium text-muted-foreground",
-              isActive && "bg-muted text-foreground",
-            )
-          }
-        >
-          {item.label}
-        </NavLink>
-      ))}
-    </nav>
-  );
-}
-
-function Header() {
-  return (
-    <header className="border-b bg-background/90 px-4 py-5 backdrop-blur md:px-6 lg:sticky lg:top-0 lg:z-10">
-      <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight md:text-1xl">
-            Dashboard tuyển dụng IT
-          </h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-        </div>
-      </div>
-    </header>
-  );
-}
 
 export function DashboardLayout() {
   const filtersQuery = useFiltersQuery();
@@ -121,31 +50,57 @@ export function DashboardLayout() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-dvh bg-background text-foreground">
-        <div className="flex">
-          <Sidebar />
-          <main className="min-w-0 flex-1">
-            <Header />
-            <MobileNav />
-            <div className="mx-auto flex max-w-[1500px] flex-col gap-6 px-4 py-6 md:px-6">
-              <Outlet
-                context={{
-                  filtersQuery,
-                  dashboardFilters: {
-                    draftFilters,
-                    appliedFilters,
-                    requestId,
-                    setDraftFilters,
-                    applyFilters,
-                    resetFilters,
-                  },
-                }}
-              />
-            </div>
-          </main>
-        </div>
-      </div>
+      <SidebarProvider>
+        <DashboardShell
+          filtersQuery={filtersQuery}
+          draftFilters={draftFilters}
+          appliedFilters={appliedFilters}
+          requestId={requestId}
+          setDraftFilters={setDraftFilters}
+          applyFilters={applyFilters}
+          resetFilters={resetFilters}
+        />
+      </SidebarProvider>
     </TooltipProvider>
+  );
+}
+
+function DashboardShell({
+  filtersQuery,
+  draftFilters,
+  appliedFilters,
+  requestId,
+  setDraftFilters,
+  applyFilters,
+  resetFilters,
+}) {
+  return (
+    <div className="min-h-dvh w-full bg-background text-foreground">
+      <div className="relative flex min-h-dvh w-full">
+        <AppSidebar />
+        <SidebarInset className="min-w-0 flex-1 overflow-x-clip bg-background">
+          <div className="px-4 py-5 md:px-6">
+            <div className="w-full">
+              <div className="flex w-full flex-col gap-6 px-3 py-5 md:px-6 xl:px-8">
+                <Outlet
+                  context={{
+                    filtersQuery,
+                    dashboardFilters: {
+                      draftFilters,
+                      appliedFilters,
+                      requestId,
+                      setDraftFilters,
+                      applyFilters,
+                      resetFilters,
+                    },
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </SidebarInset>
+      </div>
+    </div>
   );
 }
 

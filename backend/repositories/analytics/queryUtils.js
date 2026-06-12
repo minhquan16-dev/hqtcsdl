@@ -33,6 +33,24 @@ function addAggregateNameFilter(filters, clauses, request, key, columnName, inpu
   }
 }
 
+function addDirectNameFilter(filters, clauses, request, key, columnName, inputName = key) {
+  addAggregateNameFilter(filters, clauses, request, key, columnName, inputName);
+}
+
+function appendWhereClauses(where, clauses) {
+  const directClauses = clauses.filter(Boolean);
+  if (!directClauses.length) return where;
+  return where ? `${where} AND ${directClauses.join(' AND ')}` : `WHERE ${directClauses.join(' AND ')}`;
+}
+
+function withoutFilters(filters, keys) {
+  const nextFilters = { ...filters };
+  for (const key of keys) {
+    delete nextFilters[key];
+  }
+  return nextFilters;
+}
+
 function buildAggregateWhere(filters, request, options = {}) {
   const clauses = [];
   addCommonTimeFilters(filters, clauses, request);
@@ -180,9 +198,12 @@ module.exports = {
   poolPromise,
   toNumber,
   addCommonTimeFilters,
+  addDirectNameFilter,
+  appendWhereClauses,
   buildAggregateWhere,
   applyLimit,
   orderBy,
   factWhere,
   queryRecordset,
+  withoutFilters,
 };
