@@ -17,23 +17,9 @@ import sys
 # 1. CẤU HÌNH KẾT NỐI
 # ==========================
 
-# Theo ảnh SSMS của bạn đang dùng localhost
-SERVER = r"localhost"
-
-# True = Windows Authentication
-# False = SQL Server Authentication
-USE_WINDOWS_AUTH = True
-
-# Chỉ dùng khi USE_WINDOWS_AUTH = False
-USERNAME = "sa"
-PASSWORD = "your_password"
-
-
-# ==========================
-# 2. CẤU HÌNH THƯ MỤC SQL
-# ==========================
-
 BASE_DIR = Path(__file__).resolve().parent
+ROOT_DIR = BASE_DIR.parent
+ENV_FILE = ROOT_DIR / "env" / ".env"
 SQL_FOLDER = BASE_DIR / "database"
 
 SQL_FILES = [
@@ -45,6 +31,76 @@ SQL_FILES = [
     "05_run_all_etl.sql",
     "06_check_output.sql",
 ]
+
+
+def load_env_file(env_file: Path):
+    """
+    Tải file .env đơn giản mà không cần thêm dependency Python.
+    """
+    env_values = {}
+
+    if not env_file.exists():
+        print(f"LỖI: Không tìm thấy file env dùng chung: {env_file}")
+        sys.exit(1)
+
+    for raw_line in env_file.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+
+        key, value = line.split("=", 1)
+        env_values[key.strip()] = value.strip()
+
+    return env_values
+
+
+def parse_bool(value: str, default: bool = False):
+    """
+    Parse giá trị boolean từ .env với danh sách giá trị hợp lệ rõ ràng.
+    """
+    if value is None:
+        return default
+
+    normalized = value.strip().lower()
+    if normalized in {"1", "true", "yes", "y", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "n", "off"}:
+        return False
+
+    print(f"LỖI: Giá trị boolean không hợp lệ: {value}")
+    sys.exit(1)
+
+
+def load_db_config():
+    """
+    Đọc cấu hình kết nối từ env/.env.
+    Nếu thiếu DB_USER hoặc DB_PASSWORD thì fallback sang Windows Authentication.
+    """
+    env_values = load_env_file(ENV_FILE)
+
+    server = env_values.get("DB_SERVER")
+    port = env_values.get("DB_PORT")
+    username = env_values.get("DB_USER")
+    password = env_values.get("DB_PASSWORD")
+
+    if not server:
+        print("LỖI: Thiếu DB_SERVER trong env/.env")
+        sys.exit(1)
+
+    use_windows_auth = not (username and password)
+
+    return {
+        "server": f"{server},{port}" if port else server,
+        "database": env_values.get("DB_DATABASE", "JobDW"),
+        "username": username,
+        "password": password,
+        "use_windows_auth": use_windows_auth,
+        "encrypt": parse_bool(env_values.get("DB_ENCRYPT"), default=False),
+        "trust_server_certificate": parse_bool(
+            env_values.get("DB_TRUST_SERVER_CERTIFICATE"),
+            default=True,
+        ),
+    }
 
 
 def check_sqlcmd_installed():
@@ -61,27 +117,27 @@ def check_sqlcmd_installed():
         sys.exit(1)
 
 
-def build_command(sql_file: Path):
+def build_command(sql_file: Path, db_config):
     """
     Tạo lệnh sqlcmd để chạy một file SQL.
     """
     command = [
         "sqlcmd",
-        "-S", SERVER,
+        "-S", db_config["server"],
         "-i", str(sql_file),
         "-b",          # Nếu SQL lỗi thì dừng script
         "-r", "1",     # Đưa lỗi SQL ra stderr
     ]
 
-    if USE_WINDOWS_AUTH:
+    if db_config["use_windows_auth"]:
         command.insert(3, "-E")
     else:
-        command.extend(["-U", USERNAME, "-P", PASSWORD])
+        command.extend(["-U", db_config["username"], "-P", db_config["password"]])
 
     return command
 
 
-def run_sql_file(sql_file: Path):
+def run_sql_file(sql_file: Path, db_config):
     """
     Chay mot file SQL.
     """
@@ -94,7 +150,7 @@ def run_sql_file(sql_file: Path):
         print(f"LỖI: Không tìm thấy file: {sql_file}")
         sys.exit(1)
 
-    command = build_command(sql_file)
+    command = build_command(sql_file, db_config)
 
     result = subprocess.run(
         command,
@@ -120,8 +176,15 @@ def run_sql_file(sql_file: Path):
 
 
 def main():
+    db_config = load_db_config()
+
     print("BẮT ĐẦU TẠO DATA WAREHOUSE JobDW")
-    print(f"Server: {SERVER}")
+    print(f"Server: {db_config['server']}")
+    print(f"Database: {db_config['database']}")
+    print(
+        "Authentication: "
+        + ("Windows Authentication" if db_config["use_windows_auth"] else "SQL Server Authentication")
+    )
     print(f"SQL folder: {SQL_FOLDER}")
 
     check_sqlcmd_installed()
@@ -133,7 +196,7 @@ def main():
 
     for file_name in SQL_FILES:
         sql_path = SQL_FOLDER / file_name
-        run_sql_file(sql_path)
+        run_sql_file(sql_path, db_config)
 
     print()
     print("=" * 80)
