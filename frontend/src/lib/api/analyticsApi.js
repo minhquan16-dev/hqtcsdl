@@ -81,11 +81,6 @@ export const analyticsApi = {
       params: cleanParams(params),
     });
   },
-  predictSalary(params) {
-    return axiosClient.get("/api/analytics/salaries/predict", {
-      params: cleanParams(params),
-    });
-  },
   getLocations(params) {
     return axiosClient.get("/api/analytics/locations", {
       params: cleanParams(params),
@@ -137,5 +132,8 @@ export const analyticsApi = {
     return axiosClient.get("/api/analytics/jobs/breakdown", {
       params: cleanParams(params),
     });
+  },
+  postChat(message, history = []) {
+    return axiosClient.post("/api/chat", { message, history }, { timeout: 90000 });
   },
 };

@@ -125,12 +125,6 @@ module.exports = {
     allowed: [...commonTime, 'skill', 'limit', 'sortBy', 'sortOrder'],
     sortByWhitelist: ['jobCount', 'averageSalary'],
   }),
-  predictSalary: createHandler({
-    service: analyticsService.predictSalary,
-    message: 'Dự đoán lương thành công',
-    allowed: ['position', 'city', 'level', 'experience', 'skills', 'companyField', 'companySize'],
-    required: ['position'],
-  }),
   getLocations: createHandler({
     service: analyticsService.getLocations,
     message: 'Lấy phân tích địa điểm thành công',

@@ -29,6 +29,10 @@ async function startServer() {
     const app = createApp();
     const port = Number(process.env.PORT) || 3001;
 
+    if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_API_KEY) {
+      console.warn('Cảnh báo: thiếu GEMINI_API_KEY hoặc GOOGLE_API_KEY');
+    }
+
     server = app.listen(port, () => {
       console.log(`Máy chủ đang chạy tại cổng ${port}`);
     });

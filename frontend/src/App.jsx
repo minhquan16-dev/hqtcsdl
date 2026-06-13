@@ -7,7 +7,6 @@ import {
   LocationPage,
   OverviewPage,
   PositionsPage,
-  SalaryPredictionPage,
   SalaryPage,
   SkillsPage,
   TrendsPage,
@@ -24,7 +23,6 @@ export default function App() {
           <Route path="/vi-tri" element={<PositionsPage />} />
           <Route path="/ky-nang" element={<SkillsPage />} />
           <Route path="/luong" element={<SalaryPage />} />
-          <Route path="/du-doan-luong" element={<SalaryPredictionPage />} />
           <Route path="/dia-diem" element={<LocationPage />} />
           <Route path="/cong-ty" element={<CompanyPage />} />
           <Route path="/cap-bac" element={<LevelPage />} />

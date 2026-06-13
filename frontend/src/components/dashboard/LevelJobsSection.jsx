@@ -259,15 +259,30 @@ export function LevelSection({ params }) {
   );
 }
 
+function JobsBreakdownChart({ params, groupBy }) {
+  const breakdownQuery = useJobsBreakdownQuery({
+    ...params,
+    groupBy,
+  });
+
+  return (
+    <QueryBoundary query={breakdownQuery}>
+      {(data) => (
+        <HorizontalBarChart
+          data={data}
+          labelKey="nhom"
+          valueKey="soTin"
+        />
+      )}
+    </QueryBoundary>
+  );
+}
+
 export function JobsSection({ params }) {
   const [groupBy, setGroupBy] = useState("city");
   const selectedGroupBy = getBreakdownGroup(params, groupBy);
   const availableBreakdownGroups = getAvailableBreakdownGroups(params);
   const summaryQuery = useJobsSummaryQuery(params);
-  const breakdownQuery = useJobsBreakdownQuery({
-    ...params,
-    groupBy: selectedGroupBy,
-  });
 
   return (
     <Section id="tong-hop">
@@ -282,15 +297,7 @@ export function JobsSection({ params }) {
             title: `Kết quả ${item.label.toLowerCase()}`,
             description: "Chọn cách nhóm dữ liệu sau khi áp dụng bộ lọc",
             content: (
-              <QueryBoundary query={breakdownQuery}>
-                {(data) => (
-                  <HorizontalBarChart
-                    data={data}
-                    labelKey="nhom"
-                    valueKey="soTin"
-                  />
-                )}
-              </QueryBoundary>
+              <JobsBreakdownChart params={params} groupBy={item.value} />
             ),
           }))}
         />

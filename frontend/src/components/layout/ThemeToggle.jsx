@@ -12,7 +12,7 @@ function getInitialTheme() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 }
 
-export function ThemeToggle({ className, label = "Giao diện" }) {
+export function ThemeToggle({ className, iconClassName, label = "Giao diện" }) {
   const [theme, setTheme] = useState(getInitialTheme)
   const isDark = theme === "dark"
 
@@ -22,13 +22,27 @@ export function ThemeToggle({ className, label = "Giao diện" }) {
   }, [isDark, theme])
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      {isDark ? <MoonIcon /> : <SunIcon />}
-      <span className="text-sm font-medium">{label}</span>
+    <div
+      className={cn(
+        "flex h-9 w-full items-center gap-2 rounded-md px-2 text-sm",
+        className,
+      )}
+    >
+      {isDark ? (
+        <MoonIcon className={cn("size-4 shrink-0", iconClassName)} />
+      ) : (
+        <SunIcon className={cn("size-4 shrink-0", iconClassName)} />
+      )}
+
+      <span className="min-w-0 flex-1 truncate font-normal text-left">
+        {label}
+      </span>
+
       <Switch
         checked={isDark}
         aria-label={isDark ? "Chuyển sang chế độ sáng" : "Chuyển sang chế độ tối"}
         onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+        className="ml-auto shrink-0"
       />
     </div>
   )

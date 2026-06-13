@@ -744,60 +744,6 @@ Response schema thành công:
 
 Thông tin biểu đồ: label `tenKyNang`, value `luongTrungBinh`, trục X `tenKyNang`, trục Y `luongTrungBinh`, gợi ý bar chart, sort theo `sortBy`, limit mặc định 10.
 
-### 6.5. Dự đoán lương tham khảo
-
-| Mục | Nội dung |
-| --- | --- |
-| Method | `GET` |
-| Endpoint | `/api/analytics/salaries/predict` |
-| Mục đích nghiệp vụ | Ước lượng mức lương tham khảo từ model học máy đã train trên dữ liệu tuyển dụng có lương |
-
-Query parameters:
-
-| Parameter | Kiểu | Bắt buộc | Ghi chú |
-| --- | --- | --- | --- |
-| `position` | string | Có | Vị trí chuẩn hóa, ví dụ `Backend Developer` |
-| `city` | string | Không | Thành phố làm việc |
-| `level` | string | Không | Cấp bậc, ví dụ `Junior`, `Senior` |
-| `experience` | number | Không | Số năm kinh nghiệm, phải >= 0 |
-| `skills` | string | Không | Danh sách kỹ năng phân tách bằng dấu phẩy, ví dụ `Python,SQL,Docker` |
-| `companyField` | string | Không | Lĩnh vực công ty nếu có |
-| `companySize` | string | Không | Quy mô công ty nếu có |
-
-Ví dụ request:
-
-```text
-GET /api/analytics/salaries/predict?position=Backend%20Developer&city=Hồ%20Chí%20Minh&level=Junior&experience=2&skills=Python,SQL,Docker
-```
-
-Response schema thành công:
-
-```json
-{
-  "success": true,
-  "message": "Dự đoán lương thành công",
-  "data": {
-    "luongDuDoan": "number",
-    "khoangLuong": {
-      "thap": "number|null",
-      "cao": "number|null"
-    },
-    "doTinCay": "very_low|low|medium|high",
-    "donVi": "triệu VND/tháng",
-    "model": {
-      "ten": "string",
-      "mae": "number|null",
-      "rmse": "number|null",
-      "r2": "number|null",
-      "soMau": "number",
-      "thoiDiemTrain": "string"
-    }
-  }
-}
-```
-
-Ghi chú: Đây là ước lượng tham khảo dựa trên dữ liệu lịch sử hiện có, không phải dự báo xu hướng tương lai theo quý.
-
 ## 7. Địa Điểm Và Thị Trường
 
 ### 7.1. Địa điểm tuyển dụng

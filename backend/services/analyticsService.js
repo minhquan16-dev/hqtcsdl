@@ -1,5 +1,4 @@
 const analyticsRepository = require('../repositories/analyticsRepository');
-const salaryPredictionService = require('./salaryPredictionService');
 
 function roundNullable(value, digits = 2) {
   if (value === null || value === undefined) return null;
@@ -102,10 +101,6 @@ async function getSalaryBySkill(filters) {
   return withEmptyState(() => analyticsRepository.getSalaryBySkill(filters));
 }
 
-async function predictSalary(filters) {
-  return withEmptyState(() => salaryPredictionService.predictSalary(filters));
-}
-
 async function getLocations(filters) {
   return withEmptyState(() => analyticsRepository.getLocations(filters));
 }
@@ -181,7 +176,6 @@ module.exports = {
   getSalaryByExperience,
   getSalaryByCity,
   getSalaryBySkill,
-  predictSalary,
   getLocations,
   getWards,
   getCityMarkets,

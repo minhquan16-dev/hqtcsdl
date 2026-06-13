@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NAV_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "./ThemeToggle";
+import { SidebarSettingsPopover } from "./SidebarSettingsPopover";
 
 function isNavItemActive(pathname, itemPath) {
   if (itemPath === "/") return pathname === "/";
@@ -87,10 +87,8 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border/80 p-3 group-data-[collapsible=icon]:hidden">
-          <div className="flex items-center justify-between gap-3 group-data-[collapsible=icon]:justify-center">
-            <ThemeToggle />
-          </div>
+      <SidebarFooter className="border-t border-sidebar-border/80 p-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
+        <SidebarSettingsPopover />
       </SidebarFooter>
 
       <SidebarRail />
