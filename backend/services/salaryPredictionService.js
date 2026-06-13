@@ -1,4 +1,4 @@
-const { execFile } = require('node:child_process');
+const { execFile, execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 const { promisify } = require('node:util');
@@ -9,30 +9,34 @@ require('dotenv').config({ path: path.join(ROOT_DIR, 'backend', '.env') });
 
 const SCRIPT_PATH = path.join('ai_prediction', 'salary.py');
 
-function resolvePythonExecutable({
-  env = process.env,
-  existsSync = fs.existsSync,
-  platform = process.platform,
-  rootDir = ROOT_DIR,
-} = {}) {
-  const configuredPython = env.AI_PREDICTION_PYTHON?.trim();
-  if (configuredPython) {
-    return configuredPython;
+let _cachedPython = null;
+
+function findSystemPython() {
+  if (_cachedPython) return _cachedPython;
+
+  for (const cmd of ['python3', 'python']) {
+    try {
+      execFileSync(cmd, ['--version'], { stdio: 'ignore', timeout: 5000 });
+      _cachedPython = cmd;
+      return cmd;
+    } catch {
+      // command not available, try next
+    }
   }
-
-  const venvPython = platform === 'win32'
-    ? path.join(rootDir, '.venv', 'Scripts', 'python.exe')
-    : path.join(rootDir, '.venv', 'bin', 'python');
-
-  if (existsSync(venvPython)) {
-    return venvPython;
-  }
-
-  return platform === 'win32' ? 'python' : 'python3';
+  // Last resort – let it fail with a clear error later
+  return 'python';
 }
 
 function getPythonExecutable() {
-  return resolvePythonExecutable();
+  if (process.env.AI_PREDICTION_PYTHON) {
+    return process.env.AI_PREDICTION_PYTHON;
+  }
+
+  const venvPython = process.platform === 'win32'
+    ? path.join(ROOT_DIR, '.venv', 'Scripts', 'python.exe')
+    : path.join(ROOT_DIR, '.venv', 'bin', 'python');
+
+  return fs.existsSync(venvPython) ? venvPython : findSystemPython();
 }
 
 function appendOptionalArg(args, flag, value) {
@@ -90,16 +94,9 @@ async function predictSalary(filters) {
     );
     stdout = result.stdout;
   } catch (error) {
+    const detail = error.stderr?.trim() || error.message;
     console.error(error);
-    if (error.code === 'ENOENT') {
-      throw new Error(
-        `Không tìm thấy Python executable "${pythonExecutable}". ` +
-        'Hãy cấu hình AI_PREDICTION_PYTHON trong backend/.env, ví dụ Windows: ' +
-        'C:\\Users\\Admin\\project\\.venv\\Scripts\\python.exe hoặc py; ' +
-        'macOS: /Users/user/project/.venv/bin/python hoặc python3.',
-      );
-    }
-    throw new Error(`Không chạy được model dự đoán lương`);
+    throw new Error(`Không chạy được model dự đoán lương: ${detail}`);
   }
 
   try {

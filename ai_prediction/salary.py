@@ -32,7 +32,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
-
+import sys
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding = "utf-8")
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 ENV_FILE = ROOT_DIR / "env" / ".env"
@@ -94,12 +96,9 @@ def build_sqlcmd_command(query: str, env_values: dict[str, str] | None = None) -
         "-d", database,
         "-Q", query,
         "-s", "\t",
-        "-W",
         "-h-1",
         "-b",
         "-r", "1",
-        "-y", "0",
-        "-Y", "0",
     ]
 
     if parse_bool(env_values.get("DB_TRUST_SERVER_CERTIFICATE"), default=True):
