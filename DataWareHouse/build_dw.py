@@ -113,7 +113,8 @@ def check_sqlcmd_installed():
         print("Hãy kiểm tra bằng CMD:")
         print("sqlcmd -?")
         print()
-        print("Nếu không chạy được, bạn cần cài Microsoft sqlcmd hoặc thêm sqlcmd vào PATH.")
+        print(
+            "Nếu không chạy được, bạn cần cài Microsoft sqlcmd hoặc thêm sqlcmd vào PATH.")
         sys.exit(1)
 
 
@@ -125,6 +126,7 @@ def build_command(sql_file: Path, db_config):
         "sqlcmd",
         "-S", db_config["server"],
         "-i", str(sql_file),
+        "-f", "65001",
         "-b",          # Nếu SQL lỗi thì dừng script
         "-r", "1",     # Đưa lỗi SQL ra stderr
     ]
@@ -132,7 +134,8 @@ def build_command(sql_file: Path, db_config):
     if db_config["use_windows_auth"]:
         command.insert(3, "-E")
     else:
-        command.extend(["-U", db_config["username"], "-P", db_config["password"]])
+        command.extend(["-U", db_config["username"],
+                       "-P", db_config["password"]])
 
     return command
 
