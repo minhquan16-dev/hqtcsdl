@@ -12,6 +12,7 @@ router.get('/positions/:position/skills', analyticsController.getPositionSkills)
 router.get('/skills/top', analyticsController.getTopSkills);
 router.get('/languages/top', analyticsController.getTopLanguages);
 router.get('/skills/co-occurrence', analyticsController.getSkillCoOccurrence);
+router.get('/salaries/predict', analyticsController.predictSalary);
 router.get('/salaries/by-position', analyticsController.getSalaryByPosition);
 router.get('/salaries/by-experience', analyticsController.getSalaryByExperience);
 router.get('/salaries/by-city', analyticsController.getSalaryByCity);

@@ -142,6 +142,7 @@ Response mẫu:
 - `GET /api/analytics/salaries/by-experience`
 - `GET /api/analytics/salaries/by-city`
 - `GET /api/analytics/salaries/by-skill`
+- `GET /api/analytics/salaries/predict`
 
 ### Địa điểm và thị trường
 

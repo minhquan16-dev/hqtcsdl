@@ -13,6 +13,7 @@ import { TrendsSection } from "@/components/dashboard/TrendsSection";
 import { PositionsSection } from "@/components/dashboard/PositionsSection";
 import { SkillsSection } from "@/components/dashboard/SkillsSection";
 import { SalarySection } from "@/components/dashboard/SalarySection";
+import { SalaryPredictionSection } from "@/components/dashboard/SalaryPredictionSection";
 import {
   CompanySection,
   LocationSection,
@@ -337,6 +338,26 @@ export function SalaryPage() {
     >
       <SalarySection params={appliedParams} />
     </DashboardRoutePage>
+  );
+}
+
+export function SalaryPredictionPage() {
+  const { filtersQuery } = useDashboardContext();
+  const routeMeta = getRouteMeta("salaryPrediction");
+
+  return (
+    <>
+      <h1 className="text-2xl font-semibold tracking-tight">
+        {routeMeta?.label}
+      </h1>
+      <Section id="du-doan-luong">
+        {filtersQuery.isError ? (
+          <QueryError error={filtersQuery.error} onRetry={filtersQuery.refetch} />
+        ) : (
+          <SalaryPredictionSection filtersData={filtersQuery.data} />
+        )}
+      </Section>
+    </>
   );
 }
 

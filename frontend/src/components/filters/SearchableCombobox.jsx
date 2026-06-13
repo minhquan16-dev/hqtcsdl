@@ -15,6 +15,7 @@ export function SearchableCombobox({
   value,
   options = [],
   placeholder = "Chọn giá trị",
+  allowAll = true,
   onChange,
 }) {
   return (
@@ -37,13 +38,15 @@ export function SearchableCombobox({
             <CommandList>
               <CommandEmpty>Không tìm thấy lựa chọn phù hợp.</CommandEmpty>
               <CommandGroup>
-                <CommandItem
-                  value="__all__"
-                  data-checked={!value}
-                  onSelect={() => onChange("")}
-                >
-                  Tất cả
-                </CommandItem>
+                {allowAll ? (
+                  <CommandItem
+                    value="__all__"
+                    data-checked={!value}
+                    onSelect={() => onChange("")}
+                  >
+                    Tất cả
+                  </CommandItem>
+                ) : null}
                 {options.map((option) => (
                   <CommandItem
                     key={option}

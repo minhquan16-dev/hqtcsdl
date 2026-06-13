@@ -5,8 +5,11 @@ const stringMaxLengths = {
   city: 200,
   ward: 200,
   skill: 200,
+  skills: 500,
   position: 400,
   company: 400,
+  companyField: 100,
+  companySize: 100,
   level: 100,
   groupBy: 50,
   sortBy: 50,
@@ -117,7 +120,7 @@ function validateAnalyticsQuery(query, options = {}) {
       continue;
     }
 
-    if (['salaryMin', 'salaryMax', 'experienceMin', 'experienceMax'].includes(key)) {
+    if (['salaryMin', 'salaryMax', 'experienceMin', 'experienceMax', 'experience'].includes(key)) {
       const number = parseNumber(value, key);
       if (number < 0) {
         throw createValidationError(`${key} phải lớn hơn hoặc bằng 0`);

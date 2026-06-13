@@ -81,6 +81,11 @@ export const analyticsApi = {
       params: cleanParams(params),
     });
   },
+  predictSalary(params) {
+    return axiosClient.get("/api/analytics/salaries/predict", {
+      params: cleanParams(params),
+    });
+  },
   getLocations(params) {
     return axiosClient.get("/api/analytics/locations", {
       params: cleanParams(params),

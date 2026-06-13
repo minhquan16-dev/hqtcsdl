@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { analyticsApi } from "@/lib/api/analyticsApi"
 import { queryKeys } from "@/lib/queryKeys"
 
@@ -27,5 +27,11 @@ export function useSalariesBySkillQuery(params) {
   return useQuery({
     queryKey: queryKeys.analytics.salariesBySkill(params),
     queryFn: () => analyticsApi.getSalariesBySkill(params),
+  })
+}
+
+export function useSalaryPredictionMutation() {
+  return useMutation({
+    mutationFn: (params) => analyticsApi.predictSalary(params),
   })
 }

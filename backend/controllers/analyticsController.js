@@ -4,14 +4,14 @@ const { createValidationError, validateAnalyticsQuery } = require('../utils/quer
 
 const groupByWhitelist = ['quarter', 'month', 'city', 'ward', 'skill', 'position', 'company', 'level'];
 
-function createHandler({ service, message, allowed, sortByWhitelist, groupByRequired = false, pathParam }) {
+function createHandler({ service, message, allowed, sortByWhitelist, groupByRequired = false, required = [], pathParam }) {
   return async (req, res, next) => {
     try {
       const filters = validateAnalyticsQuery(req.query, {
         allowed,
         sortByWhitelist,
         groupByWhitelist,
-        required: groupByRequired ? ['groupBy'] : [],
+        required: groupByRequired ? ['groupBy', ...required] : required,
       });
 
       let result;
@@ -124,6 +124,12 @@ module.exports = {
     message: 'Lấy lương theo kỹ năng thành công',
     allowed: [...commonTime, 'skill', 'limit', 'sortBy', 'sortOrder'],
     sortByWhitelist: ['jobCount', 'averageSalary'],
+  }),
+  predictSalary: createHandler({
+    service: analyticsService.predictSalary,
+    message: 'Dự đoán lương thành công',
+    allowed: ['position', 'city', 'level', 'experience', 'skills', 'companyField', 'companySize'],
+    required: ['position'],
   }),
   getLocations: createHandler({
     service: analyticsService.getLocations,

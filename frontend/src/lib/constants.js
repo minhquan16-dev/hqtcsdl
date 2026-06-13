@@ -8,6 +8,7 @@ import {
   Layers3,
   LayoutDashboard,
   MapPinned,
+  Sparkles,
 } from "lucide-react"
 
 export const DEFAULT_LIMIT = 10
@@ -112,6 +113,7 @@ export const ROUTE_FILTER_FIELDS = {
   positions: ["year", "quarter", "position"],
   skills: ["year", "quarter", "skill"],
   salary: ["year", "quarter", "city", "position", "skill"],
+  salaryPrediction: [],
   location: ["year", "quarter", "city"],
   company: ["year", "quarter", "company"],
   level: ["year", "quarter", "level", "position"],
@@ -169,6 +171,13 @@ export const NAV_ITEMS = [
     label: "Lương",
     description: "Nhìn nhanh mặt bằng lương theo vị trí, thành phố, kỹ năng và kinh nghiệm.",
     icon: BadgeDollarSign,
+  },
+  {
+    path: "/du-doan-luong",
+    routeKey: "salaryPrediction",
+    label: "Dự đoán lương",
+    description: "Ước lượng lương tham khảo từ model học máy đã train trên dữ liệu tuyển dụng.",
+    icon: Sparkles,
   },
   {
     path: "/dia-diem",
