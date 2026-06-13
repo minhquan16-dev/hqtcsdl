@@ -1,5 +1,9 @@
 beautifulsoup4
+joblib
+numpy
+pandas
 pyodbc
 python-dotenv
+scikit-learn
 selenium
 undetected-chromedriver
