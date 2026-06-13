@@ -1,4 +1,4 @@
-const { execFile } = require('node:child_process');
+const { execFile, execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 const { promisify } = require('node:util');
@@ -6,6 +6,24 @@ const { promisify } = require('node:util');
 const execFileAsync = promisify(execFile);
 const ROOT_DIR = path.resolve(__dirname, '../..');
 const SCRIPT_PATH = path.join('ai_prediction', 'salary.py');
+
+let _cachedPython = null;
+
+function findSystemPython() {
+  if (_cachedPython) return _cachedPython;
+
+  for (const cmd of ['python3', 'python']) {
+    try {
+      execFileSync(cmd, ['--version'], { stdio: 'ignore', timeout: 5000 });
+      _cachedPython = cmd;
+      return cmd;
+    } catch {
+      // command not available, try next
+    }
+  }
+  // Last resort – let it fail with a clear error later
+  return 'python';
+}
 
 function getPythonExecutable() {
   if (process.env.AI_PREDICTION_PYTHON) {
@@ -16,7 +34,7 @@ function getPythonExecutable() {
     ? path.join(ROOT_DIR, '.venv', 'Scripts', 'python.exe')
     : path.join(ROOT_DIR, '.venv', 'bin', 'python');
 
-  return fs.existsSync(venvPython) ? venvPython : 'python3';
+  return fs.existsSync(venvPython) ? venvPython : findSystemPython();
 }
 
 function appendOptionalArg(args, flag, value) {
@@ -74,6 +92,7 @@ async function predictSalary(filters) {
     stdout = result.stdout;
   } catch (error) {
     const detail = error.stderr?.trim() || error.message;
+    console.error(error);
     throw new Error(`Không chạy được model dự đoán lương: ${detail}`);
   }
 
