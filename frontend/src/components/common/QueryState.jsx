@@ -1,21 +1,27 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useEffect } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getErrorMessage, isEmptyData } from "@/lib/format"
 
 export function QueryError({ error, onRetry }) {
+  const message = getErrorMessage(error)
+
+  useEffect(() => {
+    toast.error("Không tải được dữ liệu", {
+      description: message,
+    })
+  }, [message])
+
   return (
-    <Alert variant="destructive">
-      <AlertTitle>Không tải được dữ liệu</AlertTitle>
-      <AlertDescription className="flex flex-col gap-3">
-        <span>{getErrorMessage(error)}</span>
-        {onRetry ? (
-          <Button variant="outline" size="sm" className="w-fit" onClick={onRetry}>
-            Thử lại
-          </Button>
-        ) : null}
-      </AlertDescription>
-    </Alert>
+    <div className="flex min-h-28 flex-col items-center justify-center gap-3 rounded-3xl border border-dashed bg-muted/30 p-6 text-center">
+      <p className="text-sm font-medium">Không tải được dữ liệu</p>
+      {onRetry ? (
+        <Button variant="outline" size="sm" onClick={onRetry}>
+          Thử lại
+        </Button>
+      ) : null}
+    </div>
   )
 }
 

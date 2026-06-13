@@ -2,6 +2,7 @@ import subprocess
 from pathlib import Path
 import shutil
 import sys
+import re
 
 
 # =========================================================
@@ -118,6 +119,32 @@ def check_sqlcmd_installed():
         sys.exit(1)
 
 
+def sqlcmd_supports_codepage(help_text: str) -> bool:
+    """
+    ODBC sqlcmd tren Windows ho tro -f codepage, go-sqlcmd thi khong.
+    """
+    return re.search(r"(^|\s)-f(?:[\s,<]|,|$)", help_text) is not None
+
+
+def should_use_codepage_flag() -> bool:
+    """
+    Chi them -f 65001 khi ban sqlcmd hien tai co ho tro option nay.
+    """
+    try:
+        result = subprocess.run(
+            ["sqlcmd", "-?"],
+            text=True,
+            capture_output=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=5000,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return sys.platform.startswith("win")
+
+    return sqlcmd_supports_codepage(f"{result.stdout}\n{result.stderr}")
+
+
 def build_command(sql_file: Path, db_config):
     """
     Tạo lệnh sqlcmd để chạy một file SQL.
@@ -126,10 +153,12 @@ def build_command(sql_file: Path, db_config):
         "sqlcmd",
         "-S", db_config["server"],
         "-i", str(sql_file),
-        "-f", "65001",
         "-b",          # Nếu SQL lỗi thì dừng script
         "-r", "1",     # Đưa lỗi SQL ra stderr
     ]
+
+    if should_use_codepage_flag():
+        command.extend(["-f", "65001"])
 
     if db_config["use_windows_auth"]:
         command.insert(3, "-E")

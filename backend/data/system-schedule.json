@@ -1,0 +1,11 @@
+{
+  "enabled": false,
+  "jobType": "crawl",
+  "frequency": "daily",
+  "time": "02:00",
+  "dayOfWeek": "1",
+  "intervalHours": "6",
+  "dayOfMonth": "1",
+  "quarterMonth": "first",
+  "cronExpression": "0 2 * * *"
+}

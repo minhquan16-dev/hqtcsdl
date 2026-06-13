@@ -6,6 +6,7 @@ const cors = require('cors');
 const routes = require('./routes');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const { poolPromise } = require('./config/db');
+const systemScheduleService = require('./services/systemScheduleService');
 
 let server;
 let keepAliveInterval;
@@ -32,6 +33,8 @@ async function startServer() {
     if (!process.env.GEMINI_API_KEY && !process.env.GOOGLE_API_KEY) {
       console.warn('Cảnh báo: thiếu GEMINI_API_KEY hoặc GOOGLE_API_KEY');
     }
+
+    systemScheduleService.initializeSchedule();
 
     server = app.listen(port, () => {
       console.log(`Máy chủ đang chạy tại cổng ${port}`);

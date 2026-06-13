@@ -5,6 +5,7 @@ const { promisify } = require('node:util');
 
 const execFileAsync = promisify(execFile);
 const ROOT_DIR = path.resolve(__dirname, '../..');
+const DEFAULT_TASK_TIMEOUT_MS = 4 * 60 * 60 * 1000;
 require('dotenv').config({ path: path.join(ROOT_DIR, 'backend', '.env') });
 
 const TASKS = {
@@ -39,10 +40,6 @@ function findSystemPython() {
 function getPythonExecutable() {
   if (process.env.SYSTEM_TASK_PYTHON) {
     return process.env.SYSTEM_TASK_PYTHON;
-  }
-
-  if (process.env.AI_PREDICTION_PYTHON) {
-    return process.env.AI_PREDICTION_PYTHON;
   }
 
   const venvPython = process.platform === 'win32'
@@ -82,7 +79,7 @@ async function runSystemTask(taskName) {
       {
         cwd: ROOT_DIR,
         encoding: 'utf8',
-        timeout: Number(process.env.SYSTEM_TASK_TIMEOUT_MS) || 30 * 60 * 1000,
+        timeout: Number(process.env.SYSTEM_TASK_TIMEOUT_MS) || DEFAULT_TASK_TIMEOUT_MS,
         maxBuffer: 10 * 1024 * 1024,
       },
     );

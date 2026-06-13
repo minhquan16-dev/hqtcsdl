@@ -7,7 +7,7 @@ import {
   SparklesIcon,
   UserIcon,
 } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -121,6 +121,11 @@ export function SqlChatbotSheet() {
       const assistantMessage = createAssistantMessage(response)
       setMessages((current) => [...current, assistantMessage])
     } catch (error) {
+      toast.error("Chatbot phản hồi lỗi", {
+        description:
+          error.message ||
+          "Không thể kết nối chatbot. Vui lòng kiểm tra cấu hình hệ thống.",
+      })
       setMessages((current) => [
         ...current,
         createAssistantMessage({
@@ -168,20 +173,12 @@ export function SqlChatbotSheet() {
                 {chatMutation.isPending && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <LoaderCircleIcon className="size-4 animate-spin" />
-                    Đang truy vấn dữ liệu và diễn giải...
+                    Đang suy nghĩ...
                   </div>
                 )}
               </div>
             )}
           </div>
-
-          {chatMutation.isError && (
-            <div className="px-5">
-              <Alert variant="destructive">
-                <AlertDescription>{chatMutation.error.message}</AlertDescription>
-              </Alert>
-            </div>
-          )}
 
           <form
             className="border-t bg-background/95 p-4"
