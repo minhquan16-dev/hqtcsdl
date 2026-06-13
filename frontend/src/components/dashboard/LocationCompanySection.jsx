@@ -1,11 +1,20 @@
+import { useState } from "react";
 import {
   HorizontalBarChart,
   MarketScatterChart,
 } from "@/components/charts/SimpleCharts";
 import { DataTable } from "@/components/common/DataTable";
-import { QueryBoundary } from "@/components/common/QueryState";
+import { EmptyState, QueryBoundary } from "@/components/common/QueryState";
 import { Section } from "@/components/common/Section";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Tooltip,
   TooltipContent,
@@ -16,12 +25,14 @@ import {
   useTopCompaniesQuery,
 } from "@/hooks/queries/useCompanyQueries";
 import {
+  useCityPositionsQuery,
   useLocationsQuery,
   useMarketsCitiesQuery,
 } from "@/hooks/queries/useLocationQueries";
 import { formatExperience, formatNumber, formatSalary } from "@/lib/format";
 
 export function LocationSection({ params }) {
+  const [selectedCity, setSelectedCity] = useState("");
   const locationsQuery = useLocationsQuery({
     year: params.year,
     quarter: params.quarter,
@@ -33,6 +44,14 @@ export function LocationSection({ params }) {
     quarter: params.quarter,
     city: params.city,
     sortBy: "jobCount",
+    limit: 10,
+  });
+  const cityOptions = marketsQuery.data || [];
+  const cityForPositions =
+    params.city || selectedCity || cityOptions[0]?.tenThanhPho || "";
+  const cityPositionsQuery = useCityPositionsQuery(cityForPositions, {
+    year: params.year,
+    quarter: params.quarter,
     limit: 10,
   });
 
@@ -56,6 +75,111 @@ export function LocationSection({ params }) {
                   />
                 )}
               </QueryBoundary>
+            ),
+          },
+          {
+            value: "city-positions",
+            label: "Vị trí theo thành phố",
+            title: "Vị trí theo thành phố",
+            description:
+              "Drill-down các vị trí tuyển nhiều trong một thành phố",
+            content: (
+              <div className="flex flex-col gap-4">
+                {params.city ? (
+                  <div className="rounded-2xl border bg-muted/30 px-4 py-3 text-sm">
+                    Đang xem thành phố từ bộ lọc:{" "}
+                    <span className="font-medium text-foreground">
+                      {params.city}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-1.5 sm:max-w-xs">
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Thành phố
+                    </span>
+                    <Select
+                      value={cityForPositions}
+                      onValueChange={setSelectedCity}
+                      disabled={!cityOptions.length}
+                    >
+                      <SelectTrigger className="h-9 bg-muted/50">
+                        <SelectValue placeholder="Chọn thành phố" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {cityOptions.map((city) => (
+                            <SelectItem
+                              key={city.tenThanhPho}
+                              value={city.tenThanhPho}
+                            >
+                              {city.tenThanhPho}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {!cityForPositions ? (
+                  <EmptyState description="Chọn một thành phố để xem các vị trí tuyển dụng phổ biến" />
+                ) : (
+                  <QueryBoundary query={cityPositionsQuery}>
+                    {(data) => {
+                      const rows = data?.viTri || [];
+
+                      if (!rows.length) {
+                        return (
+                          <EmptyState description="Thành phố này chưa có dữ liệu vị trí phù hợp với bộ lọc hiện tại" />
+                        );
+                      }
+
+                      return (
+                        <div className="grid gap-4 xl:grid-cols-[1fr_1.1fr]">
+                          <HorizontalBarChart
+                            data={rows}
+                            labelKey="tenViTriChuan"
+                            valueKey="soTin"
+                          />
+                          <DataTable
+                            rows={rows}
+                            columns={[
+                              { key: "xepHang", label: "#" },
+                              {
+                                key: "tenViTriChuan",
+                                label: "Vị trí",
+                                render: (row) => (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <span className="block max-w-72 truncate">
+                                        {row.tenViTriChuan}
+                                      </span>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      {row.tenViTriChuan}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                ),
+                              },
+                              {
+                                key: "soTin",
+                                label: "Số tin",
+                                render: (row) => formatNumber(row.soTin),
+                              },
+                              {
+                                key: "luongTrungBinh",
+                                label: "Lương TB",
+                                render: (row) =>
+                                  formatSalary(row.luongTrungBinh),
+                              },
+                            ]}
+                          />
+                        </div>
+                      );
+                    }}
+                  </QueryBoundary>
+                )}
+              </div>
             ),
           },
           {

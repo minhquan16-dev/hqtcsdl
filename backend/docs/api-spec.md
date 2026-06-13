@@ -851,6 +851,65 @@ Response schema thành công:
 
 Thông tin biểu đồ: label `tenThanhPho`, value `soTin`, trục X `tenThanhPho`, trục Y có thể là `soTin`, `luongTrungBinh`, `kinhNghiemTB`, gợi ý grouped bar chart, sort theo `sortBy`, limit mặc định 10.
 
+### 7.4. Vị trí theo thành phố
+
+| Mục | Nội dung |
+| --- | --- |
+| Method | `GET` |
+| Endpoint | `/api/analytics/markets/cities/:city/positions` |
+| Mục đích nghiệp vụ | Xem các vị trí tuyển dụng phổ biến trong một thành phố |
+
+Path parameter:
+
+| Parameter | Kiểu | Bắt buộc | Validate |
+| --- | --- | --- | --- |
+| `city` | string | Có | Tối đa 200 ký tự |
+
+Query parameters: `year`, `quarter`, `limit`.
+
+Ví dụ request:
+
+```text
+GET /api/analytics/markets/cities/H%C3%A0%20N%E1%BB%99i/positions?year=2026&quarter=2&limit=10
+```
+
+Response schema thành công:
+
+```json
+{
+  "success": true,
+  "message": "Lấy vị trí theo thành phố thành công",
+  "data": {
+    "tenThanhPho": "string",
+    "viTri": [
+      {
+        "xepHang": "number",
+        "tenViTriChuan": "string",
+        "soTin": "number",
+        "luongTrungBinh": "number|null"
+      }
+    ]
+  }
+}
+```
+
+Response không có dữ liệu:
+
+```json
+{
+  "success": true,
+  "message": "Không có dữ liệu phù hợp",
+  "data": {
+    "tenThanhPho": "Hà Nội",
+    "viTri": []
+  }
+}
+```
+
+Thông tin biểu đồ: label `tenViTriChuan`, value `soTin`, trục X `tenViTriChuan`, trục Y `soTin`, gợi ý horizontal bar chart, sort theo `xepHang`, limit mặc định 10.
+
+Ghi chú FE: API dùng aggregate `AggViTriTheoThanhPho`. Aggregate hiện có `xepHang`, `tenViTriChuan`, `soTin`; chưa có lương/kinh nghiệm theo cặp thành phố-vị trí, nên `luongTrungBinh` có thể là `null`.
+
 ## 8. Công Ty
 
 ### 8.1. Top công ty tuyển dụng

@@ -42,6 +42,14 @@ export const queryKeys = {
     ],
     locations: (params) => ["analytics", "locations", params],
     marketsCities: (params) => ["analytics", "markets", "cities", params],
+    cityPositions: (city, params) => [
+      "analytics",
+      "markets",
+      "cities",
+      city,
+      "positions",
+      params,
+    ],
     companiesTop: (params) => ["analytics", "companies", "top", params],
     companiesByField: (params) => [
       "analytics",

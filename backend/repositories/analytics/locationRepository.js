@@ -6,6 +6,7 @@ const {
   factWhere,
   orderBy,
   queryRecordset,
+  sql,
   withoutFilters,
 } = require('./queryUtils');
 
@@ -79,8 +80,45 @@ async function getCityMarkets(filters) {
   });
 }
 
+async function getCityPositions(city, filters) {
+  return queryRecordset((request) => {
+    applyLimit(request, filters);
+    const clauses = [];
+
+    if (filters.year !== undefined) {
+      request.input('year', sql.Int, filters.year);
+      clauses.push('nam = @year');
+    }
+
+    if (filters.quarter !== undefined) {
+      request.input('quarter', sql.Int, filters.quarter);
+      clauses.push('quy = @quarter');
+    }
+
+    if (filters.year === undefined && filters.quarter === undefined) {
+      request.input('allPeriod', sql.VarChar, 'ALL');
+      clauses.push('nhanQuy = @allPeriod');
+    }
+
+    request.input('cityExact', sql.NVarChar, city);
+    clauses.push('tenThanhPho = @cityExact');
+
+    return `
+      SELECT TOP (@limit)
+        xepHang,
+        tenViTriChuan,
+        soTin,
+        CAST(NULL AS decimal(10, 2)) AS luongTrungBinh
+      FROM AggViTriTheoThanhPho
+      WHERE ${clauses.join(' AND ')}
+      ORDER BY xepHang ASC, soTin DESC
+    `;
+  });
+}
+
 module.exports = {
   getLocations,
   getWards,
   getCityMarkets,
+  getCityPositions,
 };

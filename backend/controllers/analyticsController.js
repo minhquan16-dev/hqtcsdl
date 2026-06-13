@@ -141,6 +141,12 @@ module.exports = {
     allowed: [...commonTime, 'city', 'limit', 'sortBy', 'sortOrder'],
     sortByWhitelist: ['jobCount', 'averageSalary', 'averageExperience', 'differentPositions'],
   }),
+  getCityPositions: createHandler({
+    service: analyticsService.getCityPositions,
+    message: 'Lấy vị trí theo thành phố thành công',
+    allowed: [...commonTime, 'limit'],
+    pathParam: 'city',
+  }),
   getTopCompanies: createHandler({
     service: analyticsService.getTopCompanies,
     message: 'Lấy top công ty tuyển dụng thành công',

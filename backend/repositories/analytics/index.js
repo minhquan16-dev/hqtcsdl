@@ -24,6 +24,7 @@ module.exports = {
   getLocations: locationRepository.getLocations,
   getWards: locationRepository.getWards,
   getCityMarkets: locationRepository.getCityMarkets,
+  getCityPositions: locationRepository.getCityPositions,
   getTopCompanies: companyRepository.getTopCompanies,
   getCompaniesByField: companyRepository.getCompaniesByField,
   getLevels: levelRepository.getLevels,

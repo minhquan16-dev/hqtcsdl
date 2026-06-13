@@ -1,12 +1,8 @@
 const {
   applyLimit,
-  addDirectNameFilter,
-  appendWhereClauses,
   buildAggregateWhere,
-  factWhere,
   orderBy,
   queryRecordset,
-  withoutFilters,
 } = require('./queryUtils');
 
 async function getSalaryByExperience(filters) {
@@ -49,27 +45,18 @@ async function getSalaryByCity(filters) {
 async function getSalaryBySkill(filters) {
   return queryRecordset((request) => {
     applyLimit(request, filters);
-    const directClauses = [];
-    addDirectNameFilter(filters, directClauses, request, 'skill', 'dk.tenKyNang');
-    const where = appendWhereClauses(
-      factWhere(withoutFilters(filters, ['skill']), request),
-      directClauses,
-    );
+    const where = buildAggregateWhere(filters, request, {
+      useAllWhenNoTimeFilter: true,
+      nameFilters: [{ key: 'skill', column: 'tenKyNang' }],
+    });
     return `
       SELECT TOP (@limit)
-        dk.tenKyNang,
-        COUNT(DISTINCT f.factId) AS soTin,
-        COUNT(DISTINCT CASE WHEN f.coLuong = 1 THEN f.factId END) AS soTinCoLuong,
-        AVG(CASE WHEN f.coLuong = 1 THEN f.luongTrungBinh END) AS luongTrungBinh
-      FROM FactTuyenDung f
-      JOIN DimThoiGian dt ON f.thoiGianId = dt.thoiGianId
-      LEFT JOIN DimViTri v ON f.viTriId = v.viTriId
-      LEFT JOIN DimCapBac cb ON f.capBacId = cb.capBacId
-      JOIN DimCongTy ct ON f.congTyId = ct.congTyId
-      JOIN FactTuyenDung_KyNang fk ON f.factId = fk.factId
-      JOIN DimKyNang dk ON fk.kyNangId = dk.kyNangId
+        tenKyNang,
+        soTin,
+        soTinCoLuong,
+        luongTrungBinh
+      FROM AggLuongTheoKyNang
       ${where}
-      GROUP BY dk.tenKyNang
       ORDER BY ${orderBy(filters.sortBy, filters.sortOrder)}
     `;
   });

@@ -24,27 +24,54 @@ import {
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { useFiltersQuery } from "@/hooks/queries/useFiltersQuery";
 import { useOverviewQuery } from "@/hooks/queries/useOverviewQuery";
-import { FILTER_DEFAULTS, NAV_ITEMS } from "@/lib/constants";
+import { NAV_ITEMS } from "@/lib/constants";
 import {
+  createRouteFilterState,
   getAllowedFilters,
   getFilterDefaults,
+  getRouteFilterState,
   sanitizeRouteParams,
+  updateRouteFilterState,
 } from "@/lib/routeFilters";
 
 export function DashboardLayout() {
   const filtersQuery = useFiltersQuery();
-  const [draftFilters, setDraftFilters] = useState(FILTER_DEFAULTS);
-  const [appliedFilters, setAppliedFilters] = useState(FILTER_DEFAULTS);
+  const [draftFiltersByRoute, setDraftFiltersByRoute] = useState(
+    createRouteFilterState,
+  );
+  const [appliedFiltersByRoute, setAppliedFiltersByRoute] = useState(
+    createRouteFilterState,
+  );
   const [requestId, setRequestId] = useState(0);
 
-  function applyFilters() {
-    setAppliedFilters(draftFilters);
+  function updateDraftFilters(routeKey, nextFilters) {
+    setDraftFiltersByRoute((current) =>
+      updateRouteFilterState(current, routeKey, nextFilters),
+    );
+  }
+
+  function applyFilters(routeKey) {
+    setAppliedFiltersByRoute((current) =>
+      updateRouteFilterState(
+        current,
+        routeKey,
+        getRouteFilterState(draftFiltersByRoute, routeKey),
+      ),
+    );
     setRequestId((current) => current + 1);
   }
 
   function resetFilters(routeKey) {
-    setDraftFilters((current) => getFilterDefaults(current, routeKey));
-    setAppliedFilters((current) => getFilterDefaults(current, routeKey));
+    setDraftFiltersByRoute((current) =>
+      updateRouteFilterState(current, routeKey, (filters) =>
+        getFilterDefaults(filters, routeKey),
+      ),
+    );
+    setAppliedFiltersByRoute((current) =>
+      updateRouteFilterState(current, routeKey, (filters) =>
+        getFilterDefaults(filters, routeKey),
+      ),
+    );
     setRequestId((current) => current + 1);
   }
 
@@ -53,10 +80,10 @@ export function DashboardLayout() {
       <SidebarProvider>
         <DashboardShell
           filtersQuery={filtersQuery}
-          draftFilters={draftFilters}
-          appliedFilters={appliedFilters}
+          draftFiltersByRoute={draftFiltersByRoute}
+          appliedFiltersByRoute={appliedFiltersByRoute}
           requestId={requestId}
-          setDraftFilters={setDraftFilters}
+          setDraftFilters={updateDraftFilters}
           applyFilters={applyFilters}
           resetFilters={resetFilters}
         />
@@ -67,8 +94,8 @@ export function DashboardLayout() {
 
 function DashboardShell({
   filtersQuery,
-  draftFilters,
-  appliedFilters,
+  draftFiltersByRoute,
+  appliedFiltersByRoute,
   requestId,
   setDraftFilters,
   applyFilters,
@@ -86,8 +113,8 @@ function DashboardShell({
                   context={{
                     filtersQuery,
                     dashboardFilters: {
-                      draftFilters,
-                      appliedFilters,
+                      draftFiltersByRoute,
+                      appliedFiltersByRoute,
                       requestId,
                       setDraftFilters,
                       applyFilters,
@@ -110,18 +137,27 @@ function useDashboardContext() {
 
 function useRouteFilters(routeKey) {
   const { dashboardFilters } = useDashboardContext();
+  const draftFilters = getRouteFilterState(
+    dashboardFilters.draftFiltersByRoute,
+    routeKey,
+  );
+  const appliedFilters = getRouteFilterState(
+    dashboardFilters.appliedFiltersByRoute,
+    routeKey,
+  );
 
   return {
-    draftFilters: dashboardFilters.draftFilters,
+    draftFilters,
     appliedParams: sanitizeRouteParams(
       {
-        ...dashboardFilters.appliedFilters,
+        ...appliedFilters,
         __requestId: dashboardFilters.requestId,
       },
       routeKey,
     ),
-    setDraftFilters: dashboardFilters.setDraftFilters,
-    applyFilters: dashboardFilters.applyFilters,
+    setDraftFilters: (nextFilters) =>
+      dashboardFilters.setDraftFilters(routeKey, nextFilters),
+    applyFilters: () => dashboardFilters.applyFilters(routeKey),
     resetFilters: () => dashboardFilters.resetFilters(routeKey),
   };
 }

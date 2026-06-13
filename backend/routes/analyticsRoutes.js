@@ -19,6 +19,7 @@ router.get('/salaries/by-skill', analyticsController.getSalaryBySkill);
 router.get('/locations', analyticsController.getLocations);
 router.get('/locations/wards', analyticsController.getWards);
 router.get('/markets/cities', analyticsController.getCityMarkets);
+router.get('/markets/cities/:city/positions', analyticsController.getCityPositions);
 router.get('/companies/top', analyticsController.getTopCompanies);
 router.get('/companies/by-field', analyticsController.getCompaniesByField);
 router.get('/levels', analyticsController.getLevels);

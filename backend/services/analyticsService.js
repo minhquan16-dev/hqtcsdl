@@ -113,6 +113,14 @@ async function getCityMarkets(filters) {
   return withEmptyState(() => analyticsRepository.getCityMarkets(filters));
 }
 
+async function getCityPositions(city, filters) {
+  const rows = await analyticsRepository.getCityPositions(city, filters);
+  return withEmptyState(() => ({
+    tenThanhPho: city,
+    viTri: rows,
+  }));
+}
+
 async function getTopCompanies(filters) {
   return withEmptyState(() => analyticsRepository.getTopCompanies(filters));
 }
@@ -171,6 +179,7 @@ module.exports = {
   getLocations,
   getWards,
   getCityMarkets,
+  getCityPositions,
   getTopCompanies,
   getCompaniesByField,
   getLevels,

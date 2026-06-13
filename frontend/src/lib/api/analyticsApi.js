@@ -91,6 +91,12 @@ export const analyticsApi = {
       params: cleanParams(params),
     });
   },
+  getCityPositions(city, params) {
+    return axiosClient.get(
+      `/api/analytics/markets/cities/${encodeURIComponent(city)}/positions`,
+      { params: cleanParams(params) },
+    );
+  },
   getTopCompanies(params) {
     return axiosClient.get("/api/analytics/companies/top", {
       params: cleanParams(params),

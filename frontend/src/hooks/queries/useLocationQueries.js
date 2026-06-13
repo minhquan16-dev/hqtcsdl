@@ -15,3 +15,11 @@ export function useMarketsCitiesQuery(params) {
     queryFn: () => analyticsApi.getMarketsCities(params),
   })
 }
+
+export function useCityPositionsQuery(city, params) {
+  return useQuery({
+    queryKey: queryKeys.analytics.cityPositions(city, params),
+    queryFn: () => analyticsApi.getCityPositions(city, params),
+    enabled: Boolean(city),
+  })
+}

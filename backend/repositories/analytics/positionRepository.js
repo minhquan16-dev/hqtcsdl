@@ -1,9 +1,9 @@
 const {
   applyLimit,
   buildAggregateWhere,
-  factWhere,
   orderBy,
   queryRecordset,
+  sql,
 } = require('./queryUtils');
 
 async function getPositions(filters) {
@@ -32,29 +32,40 @@ async function getPositions(filters) {
 async function getPositionSkills(position, filters) {
   return queryRecordset((request) => {
     applyLimit(request, filters);
-    const where = factWhere(filters, request, { positionExact: position });
+    const skillClauses = [];
+
+    if (filters.year !== undefined) {
+      request.input('year', sql.Int, filters.year);
+      skillClauses.push('s.nam = @year');
+    }
+
+    if (filters.quarter !== undefined) {
+      request.input('quarter', sql.Int, filters.quarter);
+      skillClauses.push('s.quy = @quarter');
+    }
+
+    if (filters.year === undefined && filters.quarter === undefined) {
+      request.input('allPeriod', sql.VarChar, 'ALL');
+      skillClauses.push('s.nhanQuy = @allPeriod');
+    }
+
+    request.input('positionExact', sql.NVarChar, position);
+    skillClauses.push('s.tenViTriChuan = @positionExact');
+
+    const where = `WHERE ${skillClauses.join(' AND ')}`;
+
     return `
-      WITH PositionFacts AS (
-        SELECT DISTINCT f.factId
-        FROM FactTuyenDung f
-        JOIN DimThoiGian dt ON f.thoiGianId = dt.thoiGianId
-        JOIN DimViTri v ON f.viTriId = v.viTriId
-        LEFT JOIN DimCapBac cb ON f.capBacId = cb.capBacId
-        JOIN DimCongTy ct ON f.congTyId = ct.congTyId
-        ${where}
-      ),
-      TotalFacts AS (
-        SELECT COUNT(*) AS totalJobs FROM PositionFacts
-      )
       SELECT TOP (@limit)
-        dk.tenKyNang,
-        COUNT(DISTINCT pf.factId) AS soTin,
-        CAST(COUNT(DISTINCT pf.factId) * 100.0 / NULLIF((SELECT totalJobs FROM TotalFacts), 0) AS decimal(10, 2)) AS tyLe
-      FROM PositionFacts pf
-      JOIN FactTuyenDung_KyNang fk ON pf.factId = fk.factId
-      JOIN DimKyNang dk ON fk.kyNangId = dk.kyNangId
-      GROUP BY dk.tenKyNang
-      ORDER BY soTin DESC
+        s.xepHang,
+        s.tenKyNang,
+        s.soTin,
+        CAST(s.soTin * 100.0 / NULLIF(p.soTin, 0) AS decimal(10, 2)) AS tyLe
+      FROM AggSkillTheoViTri s
+      JOIN AggLuongTheoViTri p
+        ON p.nhanQuy = s.nhanQuy
+        AND p.tenViTriChuan = s.tenViTriChuan
+      ${where}
+      ORDER BY s.xepHang ASC, s.soTin DESC
     `;
   });
 }
