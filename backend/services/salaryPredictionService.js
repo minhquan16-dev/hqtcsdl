@@ -7,16 +7,29 @@ const execFileAsync = promisify(execFile);
 const ROOT_DIR = path.resolve(__dirname, '../..');
 const SCRIPT_PATH = path.join('ai_prediction', 'salary.py');
 
-function getPythonExecutable() {
-  if (process.env.AI_PREDICTION_PYTHON) {
-    return process.env.AI_PREDICTION_PYTHON;
+function resolvePythonExecutable({
+  env = process.env,
+  existsSync = fs.existsSync,
+  platform = process.platform,
+  rootDir = ROOT_DIR,
+} = {}) {
+  if (env.AI_PREDICTION_PYTHON) {
+    return env.AI_PREDICTION_PYTHON;
   }
 
-  const venvPython = process.platform === 'win32'
-    ? path.join(ROOT_DIR, '.venv', 'Scripts', 'python.exe')
-    : path.join(ROOT_DIR, '.venv', 'bin', 'python');
+  const venvPython = platform === 'win32'
+    ? path.join(rootDir, '.venv', 'Scripts', 'python.exe')
+    : path.join(rootDir, '.venv', 'bin', 'python');
 
-  return fs.existsSync(venvPython) ? venvPython : 'python3';
+  if (existsSync(venvPython)) {
+    return venvPython;
+  }
+
+  return platform === 'win32' ? 'python' : 'python3';
+}
+
+function getPythonExecutable() {
+  return resolvePythonExecutable();
 }
 
 function appendOptionalArg(args, flag, value) {
@@ -73,8 +86,8 @@ async function predictSalary(filters) {
     );
     stdout = result.stdout;
   } catch (error) {
-    const detail = error.stderr?.trim() || error.message;
-    throw new Error(`Không chạy được model dự đoán lương: ${detail}`);
+    console.error(error);
+    throw new Error(`Không chạy được model dự đoán lương`);
   }
 
   try {
@@ -88,4 +101,5 @@ module.exports = {
   buildPredictionArgs,
   normalizePredictionPayload,
   predictSalary,
+  resolvePythonExecutable,
 };
