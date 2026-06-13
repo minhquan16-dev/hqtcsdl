@@ -5,6 +5,8 @@ const { promisify } = require('node:util');
 
 const execFileAsync = promisify(execFile);
 const ROOT_DIR = path.resolve(__dirname, '../..');
+require('dotenv').config({ path: path.join(ROOT_DIR, 'backend', '.env') });
+
 const SCRIPT_PATH = path.join('ai_prediction', 'salary.py');
 
 function resolvePythonExecutable({
@@ -13,8 +15,9 @@ function resolvePythonExecutable({
   platform = process.platform,
   rootDir = ROOT_DIR,
 } = {}) {
-  if (env.AI_PREDICTION_PYTHON) {
-    return env.AI_PREDICTION_PYTHON;
+  const configuredPython = env.AI_PREDICTION_PYTHON?.trim();
+  if (configuredPython) {
+    return configuredPython;
   }
 
   const venvPython = platform === 'win32'
@@ -73,9 +76,10 @@ function normalizePredictionPayload(payload) {
 
 async function predictSalary(filters) {
   let stdout;
+  const pythonExecutable = getPythonExecutable();
   try {
     const result = await execFileAsync(
-      getPythonExecutable(),
+      pythonExecutable,
       buildPredictionArgs(filters),
       {
         cwd: ROOT_DIR,
@@ -87,6 +91,14 @@ async function predictSalary(filters) {
     stdout = result.stdout;
   } catch (error) {
     console.error(error);
+    if (error.code === 'ENOENT') {
+      throw new Error(
+        `Không tìm thấy Python executable "${pythonExecutable}". ` +
+        'Hãy cấu hình AI_PREDICTION_PYTHON trong backend/.env, ví dụ Windows: ' +
+        'C:\\Users\\Admin\\project\\.venv\\Scripts\\python.exe hoặc py; ' +
+        'macOS: /Users/user/project/.venv/bin/python hoặc python3.',
+      );
+    }
     throw new Error(`Không chạy được model dự đoán lương`);
   }
 
