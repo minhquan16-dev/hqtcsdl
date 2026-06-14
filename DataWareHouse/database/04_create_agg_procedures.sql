@@ -146,6 +146,7 @@ BEGIN
     JOIN DimCongTy dc ON dc.congTyId = f.congTyId
     JOIN DimThoiGian dt ON dt.thoiGianId = f.thoiGianId
     WHERE (@nam IS NULL OR (dt.nam = @nam AND dt.quy = @quy))
+      AND dc.tenCongTy <> N'N/A'
     GROUP BY dc.tenCongTy, dc.linhVuc, dc.quyMo;
 
     INSERT INTO AggViecTheoDiaDiem (
