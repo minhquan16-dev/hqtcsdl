@@ -45,7 +45,7 @@ function addCommonFactFilters(request, clauses, intent, alias = 'f') {
     clauses.push('ct.linhVuc LIKE @companyField');
   }
 
-  const skills = Array.isArray(intent.skills) ? intent.skills.slice(0, 3) : [];
+  const skills = Array.isArray(intent.skills) ? intent.skills.slice(0, 6) : [];
   if (skills.length && intent.skillMatch !== 'all') {
     const skillConditions = skills.map((skill, index) => {
       const inputName = `skill${index}`;
