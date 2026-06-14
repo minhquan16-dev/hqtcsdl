@@ -45,8 +45,22 @@ function addCommonFactFilters(request, clauses, intent, alias = 'f') {
     clauses.push('ct.linhVuc LIKE @companyField');
   }
 
-  if (intent.skills?.length) {
-    intent.skills.slice(0, 3).forEach((skill, index) => {
+  const skills = Array.isArray(intent.skills) ? intent.skills.slice(0, 3) : [];
+  if (skills.length && intent.skillMatch !== 'all') {
+    const skillConditions = skills.map((skill, index) => {
+      const inputName = `skill${index}`;
+      request.input(inputName, sql.NVarChar, `%${skill}%`);
+      return `dk.tenKyNang LIKE @${inputName}`;
+    });
+
+    clauses.push(`EXISTS (
+      SELECT 1
+      FROM FactTuyenDung_KyNang fk
+      JOIN DimKyNang dk ON fk.kyNangId = dk.kyNangId
+      WHERE fk.factId = ${alias}.factId AND (${skillConditions.join(' OR ')})
+    )`);
+  } else if (skills.length) {
+    skills.forEach((skill, index) => {
       const inputName = `skill${index}`;
       request.input(inputName, sql.NVarChar, `%${skill}%`);
       clauses.push(`EXISTS (
@@ -188,6 +202,7 @@ function taskFiltersToIntent(filters = {}) {
     company: filters.company || null,
     companyField: filters.companyField || null,
     skills: Array.isArray(filters.skills) ? filters.skills : [],
+    skillMatch: filters.skillMatch === 'all' ? 'all' : 'any',
   };
 }
 

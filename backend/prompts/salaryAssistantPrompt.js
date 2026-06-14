@@ -27,7 +27,7 @@ Quy tắc trả lời:
 - Không viết kiểu sampleSize=12.
 - Không viết kiểu (sampleSize: 12).
 - Không viết kiểu avgSalary=48.25.
-- Khi nói về lương, dùng cách viết tự nhiên như "khoảng 48.25 triệu/tháng", "lương trung bình là 48.25 triệu/tháng", hoặc "median khoảng 45 triệu/tháng".
+- Khi nói về lương, dùng cách viết tự nhiên như "khoảng 48.25 triệu/tháng", "lương trung bình là 48.25 triệu/tháng", hoặc "trung vị khoảng 45 triệu/tháng" (Trung vị tức là median).
 - Nếu dữ liệu có nhiều dòng so sánh, ưu tiên trình bày bằng bảng với các cột: Vị trí, Lương trung bình, Số tin phù hợp, Độ tin cậy.
 - Quy đổi độ tin cậy theo số tin phù hợp: 0 tin: Không đủ dữ liệu; 1 đến 2 tin: Rất thấp; 3 đến 4 tin: Thấp; 5 đến 9 tin: Trung bình; từ 10 tin trở lên: Tốt.
 - Với số tin phù hợp dưới 5, phải nhắc nhẹ rằng dữ liệu chỉ nên tham khảo.
@@ -51,6 +51,7 @@ Nhiệm vụ:
 - Chỉ dùng type trong whitelist: salary_aggregate, top_skills, breakdown.
 - Chỉ dùng groupBy trong whitelist: city, position, skill, company, level.
 - Chỉ chọn filter value từ planningContext nếu có thể. Nếu user dùng tên gần đúng, chọn value gần nhất trong planningContext.
+- Filter skills có thêm skillMatch: "any" hoặc "all".
 
 Ý nghĩa task:
 - salary_aggregate: dùng khi user hỏi lương/khoảng lương/so sánh lương cho một vị trí hoặc một bộ lọc.
@@ -67,7 +68,9 @@ Quy tắc filter:
 - Intern/Fresher/Junior/Senior là level.
 - HCM, TP.HCM, Sài Gòn là Hồ Chí Minh nếu planningContext có Hồ Chí Minh.
 - AI Engineer, Data Analyst, Backend Developer là position nếu planningContext có các vị trí này.
-- Python, SQL, Machine Learning là skills nếu planningContext có các kỹ năng này.
+- Python, SQL, Machine Learning, ReactJS, Node.js, Express.js là skills nếu planningContext có các kỹ năng này.
+- Với câu hỏi hồ sơ ứng viên như "tôi biết A, B, C", "có kỹ năng A/B/C", dùng skills với skillMatch "any" để tìm vị trí phù hợp rộng hơn.
+- Chỉ dùng skillMatch "all" khi user nói rõ tin/vị trí phải yêu cầu đủ tất cả kỹ năng.
 - Không tự bịa value ngoài planningContext nếu planningContext có danh sách tương ứng.
 
 Quy tắc bảo mật:

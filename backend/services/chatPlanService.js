@@ -33,6 +33,10 @@ const chatPlanJsonSchema = {
                 type: 'array',
                 items: { type: 'string' },
               },
+              skillMatch: {
+                type: ['string', 'null'],
+                enum: ['any', 'all', null],
+              },
             },
           },
         },
@@ -70,14 +74,23 @@ function normalizeSkills(value) {
   return value.map(normalizeString).filter(Boolean).slice(0, 6);
 }
 
+function normalizeSkillMatch(value, skills) {
+  if (value === 'all') return 'all';
+  if (value === 'any') return 'any';
+  return skills.length > 1 ? 'any' : 'all';
+}
+
 function normalizeFilters(filters = {}) {
+  const skills = normalizeSkills(filters.skills);
+
   return {
     position: normalizeString(filters.position),
     level: normalizeString(filters.level),
     city: normalizeCity(filters.city),
     company: normalizeString(filters.company),
     companyField: normalizeString(filters.companyField),
-    skills: normalizeSkills(filters.skills),
+    skills,
+    skillMatch: normalizeSkillMatch(filters.skillMatch, skills),
   };
 }
 
