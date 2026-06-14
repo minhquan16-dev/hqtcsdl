@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { PanelsTopLeft, Rows3 } from "lucide-react";
+import { motion } from "motion/react";
 import { Panel } from "@/components/common/Section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -51,20 +52,89 @@ export function DashboardTabs({
   listClassName = "",
   allowWrap = false,
 }) {
+  const initialValue = defaultValue ?? tabs[0]?.value;
+  const listRef = useRef(null);
+  const triggerRefs = useRef(new Map());
   const [viewMode, setViewMode] = useState("tabs");
+  const [internalValue, setInternalValue] = useState(initialValue);
+  const [activeIndicator, setActiveIndicator] = useState(null);
+  const activeValue = value ?? internalValue;
+
+  useLayoutEffect(() => {
+    if (viewMode !== "tabs") return undefined;
+
+    const listElement = listRef.current;
+    const activeTrigger = triggerRefs.current.get(activeValue);
+    if (!listElement || !activeTrigger) return undefined;
+
+    function updateActiveIndicator() {
+      const listRect = listElement.getBoundingClientRect();
+      const triggerRect = activeTrigger.getBoundingClientRect();
+
+      setActiveIndicator({
+        x: triggerRect.left - listRect.left,
+        y: triggerRect.top - listRect.top,
+        width: triggerRect.width,
+        height: triggerRect.height,
+      });
+    }
+
+    const animationFrame = requestAnimationFrame(updateActiveIndicator);
+
+    const resizeObserver = new ResizeObserver(updateActiveIndicator);
+    resizeObserver.observe(listElement);
+    resizeObserver.observe(activeTrigger);
+    window.addEventListener("resize", updateActiveIndicator);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateActiveIndicator);
+    };
+  }, [activeValue, tabs.length, viewMode]);
+
+  function handleValueChange(nextValue) {
+    setInternalValue(nextValue);
+    onValueChange?.(nextValue);
+  }
 
   return (
     <Tabs
       value={value}
-      defaultValue={defaultValue}
-      onValueChange={onValueChange}
+      defaultValue={initialValue}
+      onValueChange={handleValueChange}
     >
       <div className="flex w-full items-start gap-3">
         {viewMode === "tabs" ? (
           <div className={getTabsWrapperClasses(allowWrap)}>
-            <TabsList className={getTabsListClasses(allowWrap, listClassName)}>
+            <TabsList
+              ref={listRef}
+              className={getTabsListClasses(
+                allowWrap,
+                cn("relative", listClassName),
+              )}
+            >
+              {viewMode === "tabs" && activeIndicator ? (
+                <motion.span
+                  aria-hidden="true"
+                  initial={false}
+                  animate={activeIndicator}
+                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                  className="pointer-events-none absolute left-0 top-0 rounded-full bg-primary/15"
+                />
+              ) : null}
               {tabs.map((tab) => (
-                <TabsTrigger key={tab.value} value={tab.value}>
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  ref={(node) => {
+                    if (node) {
+                      triggerRefs.current.set(tab.value, node);
+                    } else {
+                      triggerRefs.current.delete(tab.value);
+                    }
+                  }}
+                >
                   {tab.label}
                 </TabsTrigger>
               ))}

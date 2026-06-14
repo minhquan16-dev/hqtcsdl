@@ -50,6 +50,7 @@ function TabsList({
 }
 
 function TabsTrigger({
+  children,
   className,
   ...props
 }) {
@@ -57,7 +58,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-2 rounded-full border border-transparent! px-3 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all duration-200 ease-out",
+        "relative inline-flex h-[calc(100%-1px)] shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full border border-transparent! px-3 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all duration-200 ease-out",
         "group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start group-data-vertical/tabs:rounded-2xl group-data-vertical/tabs:px-3 group-data-vertical/tabs:py-1.5",
         "hover:bg-primary/10 hover:text-primary-foreground",
         "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring",
@@ -66,8 +67,7 @@ function TabsTrigger({
         "dark:text-muted-foreground dark:hover:text-primary",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 
-        "data-active:bg-primary/15 data-active:text-primary-foreground",
-        "data-active:hover:bg-primary/20",
+        "data-active:text-primary-foreground",
 
         "group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:hover:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent",
         "dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent",
@@ -80,7 +80,11 @@ function TabsTrigger({
         className
       )}
       {...props}
-    />
+    >
+      <span className="relative z-10 inline-flex items-center gap-2">
+        {children}
+      </span>
+    </TabsPrimitive.Trigger>
   )
 }
 

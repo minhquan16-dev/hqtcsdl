@@ -1,5 +1,7 @@
+import { useLayoutEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { ActivityIcon } from "lucide-react";
+import { motion } from "motion/react";
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +27,48 @@ function isNavItemActive(pathname, itemPath) {
 
 export function AppSidebar() {
   const { pathname } = useLocation();
+  const navWrapperRef = useRef(null);
+  const navLinkRefs = useRef(new Map());
+  const [activeIndicator, setActiveIndicator] = useState(null);
+  let activePath = "/";
+
+  for (const item of NAV_ITEMS) {
+    if (isNavItemActive(pathname, item.path)) {
+      activePath = item.path;
+      break;
+    }
+  }
+
+  useLayoutEffect(() => {
+    const wrapperElement = navWrapperRef.current;
+    const activeLink = navLinkRefs.current.get(activePath);
+    if (!wrapperElement || !activeLink) return undefined;
+
+    function updateActiveIndicator() {
+      const wrapperRect = wrapperElement.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+
+      setActiveIndicator({
+        x: linkRect.left - wrapperRect.left,
+        y: linkRect.top - wrapperRect.top,
+        width: linkRect.width,
+        height: linkRect.height,
+      });
+    }
+
+    const animationFrame = requestAnimationFrame(updateActiveIndicator);
+
+    const resizeObserver = new ResizeObserver(updateActiveIndicator);
+    resizeObserver.observe(wrapperElement);
+    resizeObserver.observe(activeLink);
+    window.addEventListener("resize", updateActiveIndicator);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateActiveIndicator);
+    };
+  }, [activePath]);
 
   return (
     <Sidebar
@@ -53,8 +97,17 @@ export function AppSidebar() {
 
       <SidebarContent className="px-2 py-3 group-data-[collapsible=icon]:px-0">
         <SidebarGroup className="px-2 group-data-[collapsible=icon]:px-0">
-          <SidebarGroupContent>
-            <SidebarMenu>
+          <SidebarGroupContent ref={navWrapperRef} className="relative">
+            {activeIndicator ? (
+              <motion.span
+                aria-hidden="true"
+                initial={false}
+                animate={activeIndicator}
+                transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                className="pointer-events-none absolute left-0 top-0 rounded-xl bg-sidebar-primary"
+              />
+            ) : null}
+            <SidebarMenu className="relative z-10">
               {NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
                 const isActive = isNavItemActive(pathname, item.path);
@@ -66,13 +119,22 @@ export function AppSidebar() {
                       isActive={isActive}
                       tooltip={item.label}
                       className={cn(
-                        "rounded-xl px-2.5 text-sidebar-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground data-active:bg-sidebar-primary data-active:text-sidebar-primary-foreground data-active:hover:bg-sidebar-primary data-active:hover:text-sidebar-primary-foreground",
+                        "relative rounded-xl px-2.5 text-sidebar-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground data-active:bg-transparent data-active:text-sidebar-primary-foreground data-active:hover:bg-transparent data-active:hover:text-sidebar-primary-foreground",
                         "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0",
                       )}
                     >
-                      <Link to={item.path}>
-                        <Icon />
-                        <span className="group-data-[collapsible=icon]:hidden">
+                      <Link
+                        ref={(node) => {
+                          if (node) {
+                            navLinkRefs.current.set(item.path, node);
+                          } else {
+                            navLinkRefs.current.delete(item.path);
+                          }
+                        }}
+                        to={item.path}
+                      >
+                        <Icon className="relative z-10" />
+                        <span className="relative z-10 group-data-[collapsible=icon]:hidden">
                           {item.label}
                         </span>
                       </Link>
