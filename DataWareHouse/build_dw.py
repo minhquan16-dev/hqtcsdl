@@ -154,7 +154,6 @@ def build_command(sql_file: Path, db_config):
         "sqlcmd",
         "-S", db_config["server"],
         "-i", str(sql_file),
-        "-f","65001",
         "-b",          # Nếu SQL lỗi thì dừng script
         "-r", "1",     # Đưa lỗi SQL ra stderr
     ]

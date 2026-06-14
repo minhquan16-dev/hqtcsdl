@@ -68,11 +68,6 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_DimViTri_tenViTriChuan
     CREATE NONCLUSTERED INDEX IX_DimViTri_tenViTriChuan
         ON DimViTri(tenViTriChuan);
 
--- DimCapBac: dùng trong LIKE filter + exact match
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_DimCapBac_tenCapBac' AND object_id = OBJECT_ID('DimCapBac'))
-    CREATE NONCLUSTERED INDEX IX_DimCapBac_tenCapBac
-        ON DimCapBac(tenCapBac);
-
 -- DimKyNang: dùng trong LIKE filter + exact match
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_DimKyNang_tenKyNang' AND object_id = OBJECT_ID('DimKyNang'))
     CREATE NONCLUSTERED INDEX IX_DimKyNang_tenKyNang
@@ -123,11 +118,6 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_AggLuongTheoViTri_nhan
         ON AggLuongTheoViTri(nhanQuy)
         INCLUDE (tenViTriChuan, soTin, soTinCoLuong, luongTrungBinh, luongMin, luongMax, kinhNghiemTB);
 
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_AggLuongTheoKinhNghiem_nhanQuy' AND object_id = OBJECT_ID('AggLuongTheoKinhNghiem'))
-    CREATE NONCLUSTERED INDEX IX_AggLuongTheoKinhNghiem_nhanQuy
-        ON AggLuongTheoKinhNghiem(nhanQuy)
-        INCLUDE (nhomKinhNghiem, soTin, soTinCoLuong, luongTrungBinh);
-
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_AggCongTyTuyenNhieu_nhanQuy' AND object_id = OBJECT_ID('AggCongTyTuyenNhieu'))
     CREATE NONCLUSTERED INDEX IX_AggCongTyTuyenNhieu_nhanQuy
         ON AggCongTyTuyenNhieu(nhanQuy)
@@ -137,11 +127,6 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_AggViecTheoDiaDiem_nha
     CREATE NONCLUSTERED INDEX IX_AggViecTheoDiaDiem_nhanQuy
         ON AggViecTheoDiaDiem(nhanQuy)
         INCLUDE (xepHang, tenThanhPho, soTin, luongTrungBinh);
-
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_AggCapBacTuyenDung_nhanQuy' AND object_id = OBJECT_ID('AggCapBacTuyenDung'))
-    CREATE NONCLUSTERED INDEX IX_AggCapBacTuyenDung_nhanQuy
-        ON AggCapBacTuyenDung(nhanQuy)
-        INCLUDE (tenCapBac, soTin, tyLe);
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_AggThiTruongThanhPho_nhanQuy' AND object_id = OBJECT_ID('AggThiTruongThanhPho'))
     CREATE NONCLUSTERED INDEX IX_AggThiTruongThanhPho_nhanQuy
@@ -183,11 +168,11 @@ GO
 PRINT N'';
 PRINT N'================================================================';
 PRINT N'HOÀN THÀNH TẠO INDEXES CHO JobDW';
-PRINT N'Tổng cộng: 25 indexes';
+PRINT N'Tổng cộng: 22 indexes';
 PRINT N'  - 4 FK indexes trên FactTuyenDung';
 PRINT N'  - 2 reverse indexes trên bridge tables';
-PRINT N'  - 6 indexes trên dimension tables';
-PRINT N'  - 11 indexes trên aggregate tables';
+PRINT N'  - 5 indexes trên dimension tables';
+PRINT N'  - 9 indexes trên aggregate tables';
 PRINT N'  - 2 composite indexes trên aggregate tables';
 PRINT N'================================================================';
 GO

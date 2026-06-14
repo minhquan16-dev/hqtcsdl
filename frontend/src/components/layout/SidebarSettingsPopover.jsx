@@ -149,7 +149,7 @@ export function SidebarSettingsPopover() {
     try {
       await task.run()
       toast.success("Đã bắt đầu tác vụ nền", {
-        description: `${task.label} đang chạy. Tác vụ cào dữ liệu có thể mất hơn 2 giờ.`,
+        description: `${task.label} đang chạy`,
       })
     } catch (error) {
       toast.error(`${task.label} thất bại`, {
