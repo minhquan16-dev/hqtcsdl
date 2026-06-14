@@ -31,6 +31,7 @@ SQL_FILES = [
     "04_create_agg_procedures.sql",
     "05_run_all_etl.sql",
     "06_check_output.sql",
+    "07_create_indexes.sql",
 ]
 
 
@@ -153,6 +154,7 @@ def build_command(sql_file: Path, db_config):
         "sqlcmd",
         "-S", db_config["server"],
         "-i", str(sql_file),
+        "-f","65001",
         "-b",          # Nếu SQL lỗi thì dừng script
         "-r", "1",     # Đưa lỗi SQL ra stderr
     ]

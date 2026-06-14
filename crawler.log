@@ -1,0 +1,137 @@
+2026-06-14 14:27:43,946 [Thread-1] INFO: [Luồng 1] Đang khởi tạo trình duyệt...
+2026-06-14 14:27:45,535 [Thread-1] INFO: patching driver executable C:\Users\ADMIN\appdata\roaming\undetected_chromedriver\undetected_chromedriver.exe
+2026-06-14 14:27:52,058 [Thread-1] INFO: [LUỒNG 1] TRANG 1
+2026-06-14 14:27:52,058 [Thread-2] INFO: [Luồng 2] Đang khởi tạo trình duyệt...
+2026-06-14 14:27:56,187 [Thread-2] INFO: [LUỒNG 2] TRANG 2
+2026-06-14 14:27:56,188 [Thread-3] INFO: [Luồng 3] Đang khởi tạo trình duyệt...
+2026-06-14 14:28:00,290 [Thread-3] INFO: [LUỒNG 3] TRANG 3
+2026-06-14 14:28:00,290 [Thread-4] INFO: [Luồng 4] Đang khởi tạo trình duyệt...
+2026-06-14 14:28:04,614 [Thread-4] INFO: [LUỒNG 4] TRANG 4
+2026-06-14 14:28:04,614 [Thread-5] INFO: [Luồng 5] Đang khởi tạo trình duyệt...
+2026-06-14 14:28:08,787 [Thread-5] INFO: [LUỒNG 5] TRANG 5
+2026-06-14 14:28:23,994 [Thread-1] INFO: [Luồng 1] ✓ Nhân Viên Lập Trình
+2026-06-14 14:28:27,493 [Thread-2] INFO: [Luồng 2] ✓ Nhân Viên Lập Trình Và Vận Hành Máy CNC 
+2026-06-14 14:28:31,711 [Thread-3] INFO: [Luồng 3] ✓ Kỹ Thuật Viên Lập Trình Và Setup Máy Tiệ
+2026-06-14 14:28:35,682 [Thread-4] INFO: [Luồng 4] ✓ Data Solutions Consultant
+2026-06-14 14:28:40,059 [Thread-5] INFO: [Luồng 5] ✓ Business Analyst (Domain Bank/Fintech)
+2026-06-14 14:28:41,497 [Thread-1] INFO: [Luồng 1] ✓ Nhân Viên Kinh Doanh/ Sale Phần Mềm, Thu
+2026-06-14 14:28:41,824 [Thread-2] INFO: [Luồng 2] ✓ www.topcv.vn
+2026-06-14 14:28:46,483 [Thread-3] INFO: [Luồng 3] ✓ www.topcv.vn
+2026-06-14 14:28:52,834 [Thread-4] INFO: [Luồng 4] ✓ Kỹ Sư Phát Triển Phần Mềm AI Cho Thiết B
+2026-06-14 14:28:54,274 [Thread-5] INFO: [Luồng 5] ✓ www.topcv.vn
+2026-06-14 14:28:56,887 [Thread-1] INFO: [Luồng 1] ✓ www.topcv.vn
+2026-06-14 14:29:00,631 [Thread-2] INFO: [Luồng 2] ✓ Java Backend Developer (Middle) - 20-35 
+2026-06-14 14:29:01,880 [Thread-3] INFO: [Luồng 3] ✓ Chuyên Viên Khoa Học Dữ Liệu (Data Scien
+2026-06-14 14:29:07,012 [Thread-4] INFO: [Luồng 4] ✓ www.topcv.vn
+2026-06-14 14:29:12,543 [Thread-5] INFO: [Luồng 5] ✓ Nhân Viên Kinh Doanh - Tái Ký Dịch Vụ- D
+2026-06-14 14:29:15,093 [Thread-1] INFO: [Luồng 1] ✓ Senior Japanese Tester (Hybrid Working M
+2026-06-14 14:29:17,957 [Thread-2] INFO: [Luồng 2] ✓ Middle/Senior AI/ML Engineer
+2026-06-14 14:29:18,003 [Thread-3] INFO: [Luồng 3] ✓ Trưởng Nhóm Lập Trình Java Thu Nhập Hấp 
+2026-06-14 14:29:22,551 [Thread-4] INFO: [Luồng 4] ✓ Test Leader/ Trưởng Nhóm Kiểm Thử (Nữ) -
+2026-06-14 14:29:27,319 [Thread-5] INFO: [Luồng 5] ✓ DESIGN POD (Ứng Dụng AI - Nghỉ T7,CN - N
+2026-06-14 14:29:31,375 [Thread-1] INFO: [Luồng 1] ✓ Nhân Viên Quản Trị Dữ Liệu (Data Admin)
+2026-06-14 14:29:33,360 [Thread-2] INFO: [Luồng 2] ✓ Nhân Viên Thiết Kế Đồ Họa
+2026-06-14 14:29:33,388 [Thread-3] INFO: [Luồng 3] ✓ Nhân Viên Kinh Doanh Phần Mềm / Sales Gi
+2026-06-14 14:29:39,812 [Thread-4] INFO: [Luồng 4] ✓ Nhân Viên Kinh Doanh Tư Vấn Phần Mềm CRM
+2026-06-14 14:29:43,051 [Thread-5] INFO: [Luồng 5] ✓ Trưởng Phòng Công Nghệ Thông Tin / IT Ma
+2026-06-14 14:29:46,918 [Thread-1] INFO: [Luồng 1] ✓ ERP System Management (Female Only)
+2026-06-14 14:29:47,876 [Thread-3] INFO: [Luồng 3] ✓ Nhân Viên Lập Trình & Đứng Máy Phay CNC 
+2026-06-14 14:29:49,796 [Thread-2] INFO: [Luồng 2] ✓ Full Stack Engineer (Java/Spring Boot)
+2026-06-14 14:29:56,056 [Thread-4] INFO: [Luồng 4] ✓ Solution Consultant (CRM & Marketing)
+2026-06-14 14:29:57,012 [Thread-5] INFO: [Luồng 5] ✓ Nhân Viên Vận Hành Máy Tiện CNC - Setup 
+2026-06-14 14:30:01,163 [Thread-1] INFO: [Luồng 1] ✓ QA Tester - Chuyên Về Mobile & Web
+2026-06-14 14:30:04,951 [Thread-3] INFO: [Luồng 3] ✓ 2D Animator (YouTube Global Sản Phẩm Tri
+2026-06-14 14:30:06,222 [Thread-2] INFO: [Luồng 2] ✓ Server Engineer - Kỹ Sư Hệ Thống Máy Tín
+2026-06-14 14:30:11,883 [Thread-4] INFO: [Luồng 4] ✓ Graphic Designer 3D/ Thiết Kế Đồ Họa 3D 
+2026-06-14 14:30:14,085 [Thread-5] INFO: [Luồng 5] ✓ Project Manager - BHXH Full Lương - Nghỉ
+2026-06-14 14:30:16,542 [Thread-1] INFO: [Luồng 1] ✓ Business Analyst Thành Thạo Tiếng Trung 
+2026-06-14 14:30:20,435 [Thread-3] INFO: [Luồng 3] ✓ Thực Tập Sinh CNTT (Fulltime+Có Lương)
+2026-06-14 14:30:21,075 [Thread-2] INFO: [Luồng 2] ✓ Middle Tester (Manual, Ưu Tiên Automatio
+2026-06-14 14:30:29,013 [Thread-4] INFO: [Luồng 4] ✓ Nhân Viên Kinh Doanh Công Nghệ (Sales Te
+2026-06-14 14:30:30,583 [Thread-5] INFO: [Luồng 5] ✓ Thực Tập Sinh 3D Animation (Học Việc 2 T
+2026-06-14 14:30:32,405 [Thread-1] INFO: [Luồng 1] ✓ Thiết Kế Và Sản Xuất Animator Tại Hồ Chí
+2026-06-14 14:30:35,619 [Thread-2] INFO: [Luồng 2] ✓ Senior Business Analyst (BA) – Logistics
+2026-06-14 14:30:37,048 [Thread-3] INFO: [Luồng 3] ✓ Nhân Viên Kinh Doanh/ Sales / Tư Vấn Bán
+2026-06-14 14:30:44,907 [Thread-4] INFO: [Luồng 4] ✓ Senior Business Analyst Tại Hoàng Quốc V
+2026-06-14 14:30:47,043 [Thread-5] INFO: [Luồng 5] ✓ Kỹ Sư Linh Kiện
+2026-06-14 14:30:48,803 [Thread-1] INFO: [Luồng 1] ✓ IT Officer - Vin Nexus Center
+2026-06-14 14:30:48,908 [Thread-4] INFO: [LUỒNG 4] TRANG 9
+2026-06-14 14:30:51,529 [Thread-2] INFO: [Luồng 2] ✓ Giáo Viên Dạy Lập Trình Cho Trẻ - Full-T
+2026-06-14 14:30:53,723 [Thread-3] INFO: [Luồng 3] ✓ Kỹ Sư Cơ Khí ( Thiết Kế & Lập Trình CNC)
+2026-06-14 14:31:03,570 [Thread-5] INFO: [Luồng 5] ✓ Game Designer (Casual) [Hà Nội] - Thu Nh
+2026-06-14 14:31:09,129 [Thread-1] INFO: [Luồng 1] ✓ Tech Lead (Web/Backend/Fullstack) - 5 Nă
+2026-06-14 14:31:10,825 [Thread-3] INFO: [Luồng 3] ✓ B2B Sales Executive (AI Solutions/ Softw
+2026-06-14 14:31:10,863 [Thread-2] INFO: [Luồng 2] ✓ Project Manager (Banking/ Financial Doma
+2026-06-14 14:31:13,349 [Thread-4] INFO: [Luồng 4] ✓ Full Stack Developer - Làm Việc Tại Phươ
+2026-06-14 14:31:18,801 [Thread-5] INFO: [Luồng 5] ✓ Chuyên Viên Kinh Doanh/ Sale B2B/ Sale P
+2026-06-14 14:31:23,923 [Thread-1] INFO: [Luồng 1] ✓ Tech Lead/Trưởng Phòng Phát Triển Phần M
+2026-06-14 14:31:26,182 [Thread-2] INFO: [Luồng 2] ✓ Lập Trình Viên Backend Thu Nhập Từ 20 - 
+2026-06-14 14:31:26,272 [Thread-3] INFO: [Luồng 3] ✓ TechLead .NET
+2026-06-14 14:31:26,824 [Thread-4] INFO: [Luồng 4] ✓ Lập Trình Viên WinForm
+2026-06-14 14:31:32,920 [Thread-5] INFO: [Luồng 5] ✓ Nhân Viên Kinh Doanh / Sale Domain, Host
+2026-06-14 14:31:38,287 [Thread-1] INFO: [Luồng 1] ✓ IT Team Leader
+2026-06-14 14:31:40,958 [Thread-2] INFO: [Luồng 2] ✓ Trưởng Nhóm IT / Từ 2 Năm Kinh Nghiệm / 
+2026-06-14 14:31:40,990 [Thread-3] INFO: [Luồng 3] ✓ Nhân Viên Kinh Doanh/ Sales/ Tư Vấn Bán 
+2026-06-14 14:31:43,434 [Thread-4] INFO: [Luồng 4] ✓ Junior Automation Tester
+2026-06-14 14:31:47,530 [Thread-5] INFO: [Luồng 5] ✓ Tester Phần Mềm
+2026-06-14 14:31:54,201 [Thread-1] INFO: [Luồng 1] ✓ SAP SuccessFactors Consultant
+2026-06-14 14:31:56,956 [Thread-3] INFO: [Luồng 3] ✓ Chuyên Viên Quản Trị Hệ Thống- Thu Nhập 
+2026-06-14 14:31:57,913 [Thread-2] INFO: [Luồng 2] ✓ Kỹ Sư Dữ Liệu (Data Engineer)
+2026-06-14 14:31:58,211 [Thread-1] INFO: [LUỒNG 1] TRANG 6
+2026-06-14 14:32:00,684 [Thread-4] INFO: [Luồng 4] ✓ IT Manager Làm Việc Tại Hồ Chí Minh - Mứ
+2026-06-14 14:32:02,589 [Thread-5] INFO: [Luồng 5] ✓ Business Analyst
+2026-06-14 14:32:13,271 [Thread-3] INFO: [Luồng 3] ✓ Business Analyst
+2026-06-14 14:32:14,991 [Thread-2] INFO: [Luồng 2] ✓ Microsoft Cloud Lead - Azure & Security
+2026-06-14 14:32:16,771 [Thread-5] INFO: [Luồng 5] ✓ Lập Trình PLC Điều Khiển Điện Cho Máy Ch
+2026-06-14 14:32:17,583 [Thread-4] INFO: [Luồng 4] ✓ AI Engineer (Từ 1,5 Năm Kinh Nghiệm)
+2026-06-14 14:32:21,101 [Thread-1] INFO: [Luồng 1] ✓ Nhân Viên Kiểm Thử Phần Mềm (Manual Test
+2026-06-14 14:32:28,835 [Thread-3] INFO: [Luồng 3] ✓ Giảng Viên Thiết Kế Đồ Họa
+2026-06-14 14:32:29,992 [Thread-2] INFO: [Luồng 2] ✓ Business Development Executive
+2026-06-14 14:32:32,442 [Thread-4] INFO: [Luồng 4] ✓ Unity Developer (Casual/Puzzle) - Junior
+2026-06-14 14:32:32,837 [Thread-5] INFO: [Luồng 5] ✓ Chuyên Viên Quản Trị Mạng (IT Network)
+2026-06-14 14:32:36,226 [Thread-1] INFO: [Luồng 1] ✓ Nhân Viên IT - Văn Phòng Tại TP. Hồ Chí 
+2026-06-14 14:32:40,239 [Thread-1] INFO: [LUỒNG 1] TRANG 11
+2026-06-14 14:32:45,565 [Thread-3] INFO: [Luồng 3] ✓ Nhân Viên Tư Vấn Không Yêu Cầu Kinh Nghi
+2026-06-14 14:32:45,621 [Thread-2] INFO: [Luồng 2] ✓ IT Helpdesk/IT Support
+2026-06-14 14:32:49,344 [Thread-5] INFO: [Luồng 5] ✓ Chuyên Viên Kinh Doanh
+2026-06-14 14:32:49,413 [Thread-4] INFO: [Luồng 4] ✓ Manual Tester - Từ 3 Năm Kinh Nghiệm - D
+2026-06-14 14:33:00,527 [Thread-3] INFO: [Luồng 3] ✓ Business Analyst [MISA Lending]
+2026-06-14 14:33:01,025 [Thread-2] INFO: [Luồng 2] ✓ Nhân Viên Kỹ Thuật (Chỉ Nam) - Thu Nhập 
+2026-06-14 14:33:02,977 [Thread-1] INFO: [Luồng 1] ✓ Product Development Designer
+2026-06-14 14:33:04,380 [Thread-5] INFO: [Luồng 5] ✓ SAP Consultant BPC/EPM
+2026-06-14 14:33:04,414 [Thread-4] INFO: [Luồng 4] ✓ Trưởng Nhóm IT
+2026-06-14 14:33:16,010 [Thread-3] INFO: [Luồng 3] ✓ .NET DEVELOPMENT ENGINEER Biết Tiếng Tru
+2026-06-14 14:33:17,890 [Thread-2] INFO: [Luồng 2] ✓ Kỹ Sư AI Ứng Dụng (LLM & AI Agent)
+2026-06-14 14:33:19,403 [Thread-5] INFO: [Luồng 5] ✓ Chuyên Viên Phân Tích Rủi Ro - Fraud
+2026-06-14 14:33:19,439 [Thread-1] INFO: [Luồng 1] ✓ Nhân Viên Thiết Kế Thumbnail Youtube
+2026-06-14 14:33:20,069 [Thread-4] INFO: [Luồng 4] ✓ Data Analyst (Tử Vi AI)
+2026-06-14 14:33:31,102 [Thread-3] INFO: [Luồng 3] ✓ Nhân Viên Thiết Kế Đồ Họa/ Designer Tại 
+2026-06-14 14:33:33,484 [Thread-1] INFO: [Luồng 1] ✓ Nhân Viên Kinh Doanh Phần Mềm
+2026-06-14 14:33:34,647 [Thread-2] INFO: [Luồng 2] ✓ Chuyên Viên Quản Lý Dự Án (Project Manag
+2026-06-14 14:33:34,696 [Thread-5] INFO: [Luồng 5] ✓ Project Manager (Domain Chính Phủ)
+2026-06-14 14:33:36,934 [Thread-4] INFO: [Luồng 4] ✓ Chuyên Viên Kiểm Tra Chất Lượng (Senior 
+2026-06-14 14:33:45,739 [Thread-3] INFO: [Luồng 3] ✓ Kỹ Thuật Viên Lập Trình Và Setup Máy Pha
+2026-06-14 14:33:50,067 [Thread-1] INFO: [Luồng 1] ✓ Thực Tập Sinh Kinh Doanh Phần Mềm Có Mộc
+2026-06-14 14:33:50,536 [Thread-2] INFO: [Luồng 2] ✓ Fresher 3D Artist (Blender + Substance 3
+2026-06-14 14:33:50,572 [Thread-5] INFO: [Luồng 5] ✓ Nhân Viên Bán Hàng Phụ Kiện Điện Tử - Kh
+2026-06-14 14:33:51,110 [Thread-4] INFO: [Luồng 4] ✓ Nhân Viên Công Nghệ Thông Tin (It Suppor
+2026-06-14 14:33:54,540 [Thread-2] INFO: [LUỒNG 2] TRANG 7
+2026-06-14 14:34:00,030 [Thread-3] INFO: [Luồng 3] ✓ Nhân Viên Thiết Kế (CorelDRAW, Photoshop
+2026-06-14 14:34:06,043 [Thread-5] INFO: [Luồng 5] ✓ Nhân Viên Thiết Kế 3D Sự Kiện – Thu Nhập
+2026-06-14 14:34:06,089 [Thread-1] INFO: [Luồng 1] ✓ Nhân Viên Designer
+2026-06-14 14:34:07,073 [Thread-4] INFO: [Luồng 4] ✓ Kỹ Sư Kiểm Thử An Toàn Thông Tin
+2026-06-14 14:34:14,427 [Thread-3] INFO: [Luồng 3] ✓ Chuyên Viên Quản Lý Dự Án
+2026-06-14 14:34:20,763 [Thread-2] INFO: [Luồng 2] ✓ Data Engineer (Lương Upto 20 Triệu + Thư
+2026-06-14 14:34:22,690 [Thread-1] INFO: [Luồng 1] ✓ Công Nhân Lập Trình, Vận Hành Máy Cnc Gỗ
+2026-06-14 14:34:22,725 [Thread-5] INFO: [Luồng 5] ✓ Chuyên Viên Kinh Doanh (Technology/ BFSI
+2026-06-14 14:34:23,792 [Thread-4] INFO: [Luồng 4] ✓ Chuyên Viên Kiểm Thử Phần Mềm - Manual T
+2026-06-14 14:34:29,662 [Thread-3] INFO: [Luồng 3] ✓ Chuyên Viên Telesales - Thu Nhập Hấp Dẫn
+2026-06-14 14:34:35,622 [Thread-2] INFO: [Luồng 2] ✓ Senior Data Engineer (AWS, Kubernetes) –
+2026-06-14 14:34:38,651 [Thread-5] INFO: [Luồng 5] ✓ Senior Business Development Executive (F
+2026-06-14 14:34:38,722 [Thread-1] INFO: [Luồng 1] ✓ Brand Designer (Graphic & Video)
+2026-06-14 14:34:40,324 [Thread-4] INFO: [Luồng 4] ✓ Product Tester (HN)
+2026-06-14 14:34:46,651 [Thread-3] INFO: [Luồng 3] ✓ Chuyên Viên Business Analyst Từ 03 Năm K
+2026-06-14 14:34:52,639 [Thread-2] INFO: [Luồng 2] ✓ Nhân Viên IT Helpdesk/ IT Support - Có T
+2026-06-14 14:34:53,611 [Thread-1] INFO: [Luồng 1] ✓ Nhân Viên Sales TrueAds (Phần Mềm Market
+2026-06-14 14:34:54,758 [Thread-5] INFO: [Luồng 5] ✓ Kỹ Sư Phát Triển Phần Mềm Nhúng Matlab S
+2026-06-14 14:34:56,350 [Thread-4] INFO: [Luồng 4] ✓ Nhân Viên Kỹ Thuật Triển Khai - IT Suppo
