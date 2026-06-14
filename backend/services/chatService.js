@@ -39,32 +39,21 @@ function validateChatHistory(history) {
 }
 
 function getSampleSize(data) {
-  if (!data) return 0;
-  if (typeof data.sampleSize === 'number') return data.sampleSize;
   if (Array.isArray(data)) {
-    return data.reduce((sum, row) => {
-      if (typeof row?.sampleSize === 'number') return sum + row.sampleSize;
-      if (typeof row?.data?.sampleSize === 'number') return sum + row.data.sampleSize;
-      if (Array.isArray(row?.data)) {
-        return sum + row.data.reduce((innerSum, item) => innerSum + (Number(item.sampleSize) || 0), 0);
+    return data.reduce((sum, item) => {
+      if (item && typeof item === 'object' && 'data' in item) {
+        return sum + getSampleSize(item.data);
       }
-      return sum;
+
+      return sum + getSampleSize(item);
     }, 0);
   }
-  if (data.first || data.second) {
-    return Math.min(
-      Number(data.first?.data?.sampleSize) || 0,
-      Number(data.second?.data?.sampleSize) || 0,
-    );
-  }
-  return 0;
-}
 
-function getPlanIntent(plan) {
-  return {
-    intent: 'chat_plan',
-    taskCount: Array.isArray(plan?.tasks) ? plan.tasks.length : 0,
-  };
+  if (data && typeof data === 'object') {
+    return Number(data.sampleSize) || 0;
+  }
+
+  return 0;
 }
 
 function getConfidence(data) {
@@ -76,33 +65,37 @@ function getConfidence(data) {
 
 function sanitizePublicAnswer(answer = '') {
   return String(answer)
-    .replace(/\(?\b(sampleSize|avgSalary|minSalary|maxSalary|medianSalary|DB_CONTEXT|intent|queryTemplate)\s*[:=]\s*[^,\n)]+[\)]?/gi, '')
-    .replace(/\b(sampleSize|avgSalary|minSalary|maxSalary|medianSalary|DB_CONTEXT|intent|queryTemplate)\b/gi, '')
     .replace(/\bcơ sở dữ liệu\s+JobDW\b/gi, 'dữ liệu hiện có')
     .replace(/\bJobDW\b/gi, 'dữ liệu hiện có')
     .replace(/\bcơ sở dữ liệu\s+dữ liệu hiện có\b/gi, 'dữ liệu hiện có')
-    .replace(/không có dữ liệu tuyển dụng trong dữ liệu hiện có/gi, 'không có dữ liệu tuyển dụng phù hợp')
-    .replace(/không có dữ liệu trong dữ liệu hiện có/gi, 'không có dữ liệu phù hợp')
     .replace(/\bSQL\s*Server\b/gi, 'hệ thống dữ liệu')
-    .replace(/\bdata\s*warehouse\b/gi, 'dữ liệu hiện có')
-    .replace(/\bwarehouse\b/gi, 'dữ liệu hiện có')
-    .replace(/\bFactTuyenDung\b/gi, 'dữ liệu hiện có')
-    .replace(/\bDim(ViTri|CapBac|DiaDiem|KyNang)\b/gi, 'dữ liệu hiện có')
     .trim();
 }
 
-function hasNoData(data) {
-  if (!data) return true;
-  if (Array.isArray(data)) return data.length === 0;
-  if (typeof data.sampleSize === 'number') return data.sampleSize === 0;
-  if (data.first || data.second) {
-    return !data.first?.data?.sampleSize && !data.second?.data?.sampleSize;
+function hasTaskData(data) {
+  if (Array.isArray(data)) {
+    return data.some((item) => {
+      if (item && typeof item === 'object' && 'sampleSize' in item) {
+        return Number(item.sampleSize) > 0;
+      }
+
+      return Boolean(item);
+    });
   }
-  return false;
+
+  if (data && typeof data === 'object' && 'sampleSize' in data) {
+    return Number(data.sampleSize) > 0;
+  }
+
+  return Boolean(data);
 }
 
-function fallbackAnswer(intent, data) {
-  if (intent.intent === 'unknown') {
+function hasNoData(data) {
+  return !Array.isArray(data) || data.length === 0 || !data.some((task) => hasTaskData(task?.data));
+}
+
+function fallbackAnswer(data) {
+  if (!Array.isArray(data) || data.length === 0) {
     return 'Mình chưa đủ thông tin để trả lời câu hỏi này. Bạn có thể hỏi về lương theo vị trí, kỹ năng, top vị trí lương cao hoặc kỹ năng theo vị trí.';
   }
 
@@ -114,7 +107,7 @@ function fallbackAnswer(intent, data) {
   return `Có ${sampleSize} mẫu phù hợp, nhưng chưa thể diễn giải tự động ở thời điểm này.`;
 }
 
-async function generateAnswer({ message, intent, data }, deps = {}) {
+async function generateAnswer({ message, data }, deps = {}) {
   const generateText = deps.generateText || geminiService.generateText;
   const contents = [
     {
@@ -123,10 +116,6 @@ async function generateAnswer({ message, intent, data }, deps = {}) {
         text: JSON.stringify({
           userQuestion: message,
           DB_CONTEXT: data,
-          rules: {
-            salaryUnit: 'triệu VNĐ',
-            hideInternalDetails: true,
-          },
         }),
       }],
     },
@@ -137,7 +126,7 @@ async function generateAnswer({ message, intent, data }, deps = {}) {
     systemInstruction: answerSystemInstruction,
   });
 
-  return sanitizePublicAnswer(answer.trim() || fallbackAnswer(intent, data));
+  return sanitizePublicAnswer(answer.trim() || fallbackAnswer(data));
 }
 
 function logChatEvent(logger, event, payload) {
@@ -145,8 +134,7 @@ function logChatEvent(logger, event, payload) {
   const logPayload = {
     event,
     requestId: payload.requestId,
-    intent: payload.intent?.intent || 'unknown',
-    taskCount: payload.intent?.taskCount,
+    taskCount: payload.taskCount,
     confidence: payload.confidence,
     sampleSize: payload.sampleSize,
     messageLength: payload.messageLength,
@@ -180,18 +168,17 @@ async function handleChat(message, deps = {}) {
     const plan = chatPlanService.validateChatPlan(
       await createChatPlan({ message: cleanMessage, history, planningContext }),
     );
-    const intent = getPlanIntent(plan);
     const data = plan.tasks.length && repository.executeChatPlan
       ? await repository.executeChatPlan(plan)
       : [];
     const confidence = getConfidence(data);
     const answer = sanitizePublicAnswer(
-      await answerGenerator({ message: cleanMessage, intent, data }),
+      await answerGenerator({ message: cleanMessage, data }),
     );
 
     logChatEvent(logger, 'chat_success', {
       requestId,
-      intent,
+      taskCount: plan.tasks.length,
       confidence,
       sampleSize: getSampleSize(data),
       messageLength: cleanMessage.length,
@@ -200,12 +187,12 @@ async function handleChat(message, deps = {}) {
     });
 
     return {
-      answer: answer || sanitizePublicAnswer(fallbackAnswer(intent, data)),
+      answer: answer || sanitizePublicAnswer(fallbackAnswer(data)),
     };
   } catch (error) {
     logChatEvent(logger, 'chat_error', {
       requestId,
-      intent: { intent: 'unknown' },
+      taskCount: 0,
       confidence: 'low',
       sampleSize: 0,
       messageLength: cleanMessage.length || (typeof message === 'string' ? message.length : 0),

@@ -135,7 +135,6 @@ function mapSalaryRow(row) {
       medianSalary: null,
       avgSalary: null,
       maxSalary: null,
-      topSkills: [],
     };
   }
 
@@ -146,7 +145,6 @@ function mapSalaryRow(row) {
     medianSalary: roundNullable(row.medianSalary),
     avgSalary: roundNullable(row.avgSalary),
     maxSalary: roundNullable(row.maxSalary),
-    topSkills: [],
   };
 }
 

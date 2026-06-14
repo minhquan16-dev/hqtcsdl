@@ -80,7 +80,7 @@ function EmptyChatState({ onPickPrompt }) {
         <p className="text-sm font-medium">Hỏi đáp với AI</p>
       </div>
       <div className="flex flex-col gap-2 text-left">
-        Gợi ý đoạn chat
+        Bắt đầu với
         {suggestedChatPrompts.map((prompt) => (
           <Button
             key={prompt}
@@ -156,7 +156,6 @@ export function SqlChatbotSheet() {
       <SheetContent className="w-full p-0 data-[side=right]:sm:max-w-[46.8rem]">
         <SheetHeader className="border-b px-5 py-4">
           <SheetTitle className="flex items-center gap-2">
-            <BotIcon className="size-5 text-primary" />
             Trợ lý tuyển dụng
           </SheetTitle>
         </SheetHeader>
