@@ -1,11 +1,13 @@
 {
-  "enabled": false,
+  "enabled": true,
   "jobType": "crawl",
-  "frequency": "daily",
+  "frequency": "interval",
   "time": "02:00",
   "dayOfWeek": "1",
-  "intervalHours": "6",
+  "intervalHours": "1",
   "dayOfMonth": "1",
   "quarterMonth": "first",
-  "cronExpression": "0 2 * * *"
+  "cronExpression": "0 */1 * * *",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "activeJob": null
 }
