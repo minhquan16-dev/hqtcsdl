@@ -86,7 +86,7 @@ const groupByConfig = {
   company: {
     select: 'ct.tenCongTy',
     order: 'soTin DESC',
-    directFilters: [{ key: 'company', column: 'ct.tenCongTy' }],
+    directFilters: [{ key: 'company', column: 'ct.tenCongTy', match: 'exact' }],
   },
   level: {
     select: 'cb.tenCapBac',
@@ -101,7 +101,9 @@ function buildBreakdownWhere(filters, request, config) {
   const directClauses = [];
 
   for (const filter of directFilters) {
-    addDirectNameFilter(filters, directClauses, request, filter.key, filter.column);
+    addDirectNameFilter(filters, directClauses, request, filter.key, filter.column, filter.inputName, {
+      match: filter.match,
+    });
   }
 
   return appendWhereClauses(

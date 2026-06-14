@@ -26,15 +26,16 @@ function addCommonTimeFilters(filters, clauses, request, alias = '') {
   }
 }
 
-function addAggregateNameFilter(filters, clauses, request, key, columnName, inputName = key) {
+function addAggregateNameFilter(filters, clauses, request, key, columnName, inputName = key, options = {}) {
   if (filters[key] !== undefined) {
-    request.input(inputName, sql.NVarChar, `%${filters[key]}%`);
-    clauses.push(`${columnName} LIKE @${inputName}`);
+    const isExactMatch = options.match === 'exact';
+    request.input(inputName, sql.NVarChar, isExactMatch ? filters[key] : `%${filters[key]}%`);
+    clauses.push(`${columnName} ${isExactMatch ? '=' : 'LIKE'} @${inputName}`);
   }
 }
 
-function addDirectNameFilter(filters, clauses, request, key, columnName, inputName = key) {
-  addAggregateNameFilter(filters, clauses, request, key, columnName, inputName);
+function addDirectNameFilter(filters, clauses, request, key, columnName, inputName = key, options = {}) {
+  addAggregateNameFilter(filters, clauses, request, key, columnName, inputName, options);
 }
 
 function appendWhereClauses(where, clauses) {
@@ -61,7 +62,9 @@ function buildAggregateWhere(filters, request, options = {}) {
   }
 
   for (const filter of options.nameFilters || []) {
-    addAggregateNameFilter(filters, clauses, request, filter.key, filter.column, filter.inputName);
+    addAggregateNameFilter(filters, clauses, request, filter.key, filter.column, filter.inputName, {
+      match: filter.match,
+    });
   }
 
   return clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
@@ -109,8 +112,8 @@ function addFactFilters(filters, clauses, request, options = {}) {
   }
 
   if (filters.company !== undefined) {
-    request.input('company', sql.NVarChar, `%${filters.company}%`);
-    clauses.push('ct.tenCongTy LIKE @company');
+    request.input('company', sql.NVarChar, filters.company);
+    clauses.push('ct.tenCongTy = @company');
   }
 
   if (filters.level !== undefined) {

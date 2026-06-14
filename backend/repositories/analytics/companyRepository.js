@@ -5,7 +5,7 @@ async function getTopCompanies(filters) {
     applyLimit(request, filters);
     const where = buildAggregateWhere(filters, request, {
       useAllWhenNoTimeFilter: true,
-      nameFilters: [{ key: 'company', column: 'tenCongTy' }],
+      nameFilters: [{ key: 'company', column: 'tenCongTy', match: 'exact' }],
     });
     return `
       SELECT TOP (@limit)
