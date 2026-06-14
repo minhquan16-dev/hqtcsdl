@@ -30,22 +30,22 @@ export function AppSidebar() {
     <Sidebar
       variant="sidebar"
       collapsible="icon"
-      className="border-r border-sidebar-border/80 bg-sidebar"
+      className="border-r border-sidebar-border/70 bg-sidebar"
     >
-      <SidebarHeader className="border-b border-sidebar-border/80 bg-primary/6 p-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-3">
+      <SidebarHeader className="border-b border-sidebar-border/70 bg-sidebar-accent/55 p-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-3">
         <div className="group/header-toggle flex items-center gap-2 group-data-[collapsible=icon]:relative group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:justify-center">
           <Link
             to="/"
             className="flex min-w-0 flex-1 items-center gap-3 rounded-xl text-sm font-semibold text-sidebar-foreground group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:inset-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:opacity-100 group-hover/header-toggle:group-data-[collapsible=icon]:opacity-0"
           >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-sidebar-primary/90 text-sidebar-primary-foreground shadow-sm">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-sidebar-primary text-sidebar-primary-foreground">
               <ActivityIcon />
             </span>
             <span className="truncate group-data-[collapsible=icon]:hidden">
-              IT Market Pulse
+              ITMP
             </span>
           </Link>
-          <SidebarTrigger className="shrink-0 group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:inset-0 group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:rounded-2xl group-data-[collapsible=icon]:opacity-0 group-hover/header-toggle:group-data-[collapsible=icon]:opacity-100" />
+          <SidebarTrigger className="shrink-0 text-sidebar-foreground/80 hover:bg-white/10 hover:text-sidebar-foreground group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:inset-0 group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:rounded-2xl group-data-[collapsible=icon]:opacity-0 group-hover/header-toggle:group-data-[collapsible=icon]:opacity-100" />
         </div>
       </SidebarHeader>
 
@@ -66,10 +66,8 @@ export function AppSidebar() {
                       isActive={isActive}
                       tooltip={item.label}
                       className={cn(
-                        "rounded-xl px-2.5",
+                        "rounded-xl px-2.5 text-sidebar-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground data-active:bg-sidebar-primary data-active:text-sidebar-primary-foreground data-active:hover:bg-sidebar-primary data-active:hover:text-sidebar-primary-foreground",
                         "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0",
-                        isActive &&
-                          "bg-primary/10 text-foreground shadow-none ring-1 ring-primary/12",
                       )}
                     >
                       <Link to={item.path}>
@@ -87,7 +85,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border/80 p-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
+      <SidebarFooter className="border-t border-sidebar-border/70 bg-black/10 p-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
         <SidebarSettingsPopover />
       </SidebarFooter>
 

@@ -204,7 +204,7 @@ export function SidebarSettingsPopover() {
           <Button
             type="button"
             variant="ghost"
-            className="w-full justify-start rounded-xl px-2.5 group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+            className="w-full justify-start rounded-xl px-2.5 text-sidebar-foreground hover:bg-sidebar-accent/90 hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
           >
             <SettingsIcon />
             <span className="group-data-[collapsible=icon]:hidden">Cài đặt</span>
