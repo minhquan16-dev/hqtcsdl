@@ -17,6 +17,8 @@ import re
 # ==========================
 # 1. CẤU HÌNH KẾT NỐI
 # ==========================
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 
 BASE_DIR = Path(__file__).resolve().parent
 ROOT_DIR = BASE_DIR.parent
